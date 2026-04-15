@@ -1,0 +1,191 @@
+@import "tailwindcss";
+
+@custom-variant dark (&:where(.dark, .dark *));
+
+/* ============================================================
+   BLKW3B // OBSIDIAN PROTOCOL — DESIGN SYSTEM v1.0
+   Black asiatic · hyper premium · ancient future · forged
+   ============================================================ */
+
+:root {
+  /* ── Canonical palette (from mood board) ── */
+  --obsidian:     #080808;   /* primary background */
+  --void:         #0D0D0D;   /* card backgrounds */
+  --dark2:        #141414;
+  --carbon:       #1A1A1A;   /* borders, dividers */
+  --dark4:        #222222;
+  --parchment:    #F0ECE0;   /* body text, data */
+  --gray:         #666666;
+
+  --vault-gold:   #C8960C;   /* primary accent, CTAs, headers */
+  --gold-light:   #E0B840;
+  --gold-glow:    rgba(200, 150, 12, 0.3);
+  --gold-muted:   rgba(200, 150, 12, 0.08);
+  --gold-border:  rgba(200, 150, 12, 0.25);
+
+  --mint-green:   #00FF88;   /* verified, positive */
+  --burn-red:     #FF3B3B;   /* negative, alerts */
+  --cyan:         #00E5FF;
+  --purple:       #B388FF;
+
+  /* ── Bridged to existing app token names so no component breaks ── */
+  --background:   var(--obsidian);
+  --foreground:   var(--parchment);
+  --primary:      var(--vault-gold);
+  --primary-foreground: var(--obsidian);
+  --muted:        var(--gray);
+  --muted-foreground: var(--gray);
+  --card:         var(--void);
+  --card-foreground: var(--parchment);
+  --popover:      var(--void);
+  --popover-foreground: var(--parchment);
+  --border:       var(--carbon);
+  --border-low:   var(--carbon);
+  --input:        var(--dark2);
+  --accent:       var(--dark2);
+  --accent-foreground: var(--parchment);
+  --cream:        var(--dark2);
+  --destructive:  var(--burn-red);
+  --destructive-foreground: var(--burn-red);
+  --ring:         var(--vault-gold);
+  --secondary:    var(--dark2);
+  --secondary-foreground: var(--parchment);
+  --gold:         var(--vault-gold);
+
+  /* Fonts */
+  --font-sans:    var(--font-space-grotesk), system-ui, sans-serif;
+  --font-display: var(--font-orbitron), sans-serif;
+  --font-jp:      var(--font-noto-jp), sans-serif;
+  --font-mono:    ui-monospace, 'SF Mono', Menlo, monospace;
+
+  --radius: 0;  /* FORGED. No rounded corners. */
+}
+
+.dark { color-scheme: dark; }
+
+@theme inline {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-primary: var(--primary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-muted: var(--muted);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-card: var(--card);
+  --color-card-foreground: var(--card-foreground);
+  --color-popover: var(--popover);
+  --color-popover-foreground: var(--popover-foreground);
+  --color-border: var(--border);
+  --color-border-low: var(--border-low);
+  --color-input: var(--input);
+  --color-accent: var(--accent);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-cream: var(--cream);
+  --color-destructive: var(--destructive);
+  --color-destructive-foreground: var(--destructive-foreground);
+  --color-ring: var(--ring);
+  --color-secondary: var(--secondary);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --font-sans: var(--font-sans);
+  --font-mono: var(--font-mono);
+  --radius-md: 0;
+  --radius-lg: 0;
+  --radius-xl: 0;
+}
+
+@layer base {
+  * {
+    @apply border-border outline-transparent;
+  }
+
+  body {
+    @apply bg-background text-foreground antialiased;
+    font-family: var(--font-sans);
+  }
+
+  /* ── DESIGN RULE: NO ROUNDED CORNERS ─────────────────────────
+     Forged, not designed. Sharp edges only.
+     Override Tailwind's rounded-* utilities globally. */
+  .rounded,
+  .rounded-sm,
+  .rounded-md,
+  .rounded-lg,
+  .rounded-xl,
+  .rounded-2xl,
+  .rounded-3xl {
+    border-radius: 0 !important;
+  }
+  /* rounded-full preserved for status dots / token pills circles */
+
+  /* Financial data, headers, numbers — Orbitron 900
+     Body, descriptions — Space Grotesk */
+}
+
+/* ── SCANLINES overlay (vault-monitor feeling) ─────────────── */
+body::after {
+  content: '';
+  position: fixed;
+  inset: 0;
+  background: repeating-linear-gradient(
+    0deg,
+    transparent,
+    transparent 2px,
+    rgba(200, 150, 12, 0.008) 2px,
+    rgba(200, 150, 12, 0.008) 4px
+  );
+  pointer-events: none;
+  z-index: 1000;
+}
+
+/* ── Utility classes ───────────────────────────────────────── */
+.font-display {
+  font-family: var(--font-display);
+  letter-spacing: 0.05em;
+}
+.font-jp {
+  font-family: var(--font-jp);
+}
+.kanji-watermark {
+  font-family: var(--font-jp);
+  color: rgba(200, 150, 12, 0.10);
+  font-weight: 900;
+  line-height: 1;
+  pointer-events: none;
+  position: absolute;
+  user-select: none;
+}
+
+/* ── CORNER BRACKETS — BLKW3B signature ────────────────────── */
+.corner-brackets {
+  position: relative;
+}
+.corner-brackets::before,
+.corner-brackets::after {
+  content: '';
+  position: absolute;
+  width: 16px;
+  height: 16px;
+  pointer-events: none;
+  z-index: 2;
+}
+.corner-brackets::before {
+  top: 0;
+  left: 0;
+  border-top: 2px solid var(--vault-gold);
+  border-left: 2px solid var(--vault-gold);
+}
+.corner-brackets::after {
+  bottom: 0;
+  right: 0;
+  border-bottom: 2px solid var(--vault-gold);
+  border-right: 2px solid var(--vault-gold);
+}
+
+/* Hexagonal clip for token icons */
+.hex-clip {
+  clip-path: polygon(50% 0%, 100% 25%, 100% 75%, 50% 100%, 0% 75%, 0% 25%);
+}
+
+/* Chamfered cut for primary CTAs */
+.chamfer {
+  clip-path: polygon(0 0, calc(100% - 10px) 0, 100% 10px, 100% 100%, 10px 100%, 0 calc(100% - 10px));
+}
