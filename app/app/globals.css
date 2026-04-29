@@ -3,7 +3,7 @@
 @custom-variant dark (&:where(.dark, .dark *));
 
 /* ============================================================
-   BLKW3B // OBSIDIAN PROTOCOL — DESIGN SYSTEM v1.0
+   BLKW3B // OBSIDIAN PROTOCOL · DESIGN SYSTEM v1.0
    Black asiatic · hyper premium · ancient future · forged
    ============================================================ */
 
@@ -54,8 +54,9 @@
 
   /* Fonts */
   --font-sans:    var(--font-space-grotesk), system-ui, sans-serif;
-  --font-display: var(--font-orbitron), sans-serif;
-  --font-jp:      var(--font-noto-jp), sans-serif;
+  --font-display: var(--font-chakra), sans-serif;
+  --font-ancient: 'Noto Sans Egyptian Hieroglyphs', 'Segoe UI Symbol', serif;
+  --font-jp:      'Noto Sans Egyptian Hieroglyphs', 'Segoe UI Symbol', serif;
   --font-mono:    ui-monospace, 'SF Mono', Menlo, monospace;
 
   --radius: 0;  /* FORGED. No rounded corners. */
@@ -116,8 +117,9 @@
   }
   /* rounded-full preserved for status dots / token pills circles */
 
-  /* Financial data, headers, numbers — Orbitron 900
-     Body, descriptions — Space Grotesk */
+  /* Display, headers, numbers : Chakra Petch 700 (diagonal-cut precision instrument)
+     Ancient watermarks : Noto Sans Egyptian Hieroglyphs
+     Body, descriptions : Space Grotesk */
 }
 
 /* ── SCANLINES overlay (vault-monitor feeling) ─────────────── */
@@ -141,20 +143,24 @@ body::after {
   font-family: var(--font-display);
   letter-spacing: 0.05em;
 }
-.font-jp {
-  font-family: var(--font-jp);
+/* Ancient glyph utility — Egyptian hieroglyphs, Mayan, Adinkra elements */
+.font-jp,
+.font-ancient {
+  font-family: var(--font-ancient);
 }
+/* Watermark: large ancient script at 10% gold opacity behind card content */
 .kanji-watermark {
-  font-family: var(--font-jp);
+  font-family: var(--font-ancient);
   color: rgba(200, 150, 12, 0.10);
-  font-weight: 900;
+  font-weight: 400;
   line-height: 1;
   pointer-events: none;
   position: absolute;
   user-select: none;
+  letter-spacing: 0.04em;
 }
 
-/* ── CORNER BRACKETS — BLKW3B signature ────────────────────── */
+/* ── CORNER BRACKETS · BLKW3B signature ────────────────────── */
 .corner-brackets {
   position: relative;
 }
@@ -188,4 +194,20 @@ body::after {
 /* Chamfered cut for primary CTAs */
 .chamfer {
   clip-path: polygon(0 0, calc(100% - 10px) 0, 100% 10px, 100% 100%, 10px 100%, 0 calc(100% - 10px));
+}
+
+/* Hover scanline sweep, used by StatCard */
+@keyframes scanline-sweep {
+  0%   { transform: translateX(-100%); opacity: 0.6; }
+  100% { transform: translateX(200%);  opacity: 0;   }
+}
+
+@keyframes ping {
+  0%       { transform: scale(1);   opacity: 0.75; }
+  75%, 100% { transform: scale(2.4); opacity: 0;    }
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(12px); }
+  to   { opacity: 1; transform: translateY(0);    }
 }

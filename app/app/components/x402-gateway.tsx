@@ -85,7 +85,7 @@ export function X402Gateway() {
       className="w-full border corner-brackets p-6 relative"
       style={{ background: "var(--void)", borderColor: "var(--carbon)" }}
     >
-      <span className="kanji-watermark text-[100px] -top-4 right-4" aria-hidden="true">関所</span>
+      <span className="kanji-watermark text-[100px] -top-4 right-4" aria-hidden="true">𓂋𓈖</span>
 
       {/* Header */}
       <div className="relative flex items-start justify-between mb-6 gap-4 flex-wrap">
@@ -182,7 +182,7 @@ export function X402Gateway() {
           <div className="p-4 space-y-3" style={{ background: "var(--dark2)", border: "1px solid var(--carbon)" }}>
             <p className="font-display text-[10px] uppercase tracking-[0.25em] font-bold" style={{ color: "var(--gray)" }}>How x402 works</p>
             {[
-              { step: "1", text: "Client hits endpoint — no payment header" },
+              { step: "1", text: "Client hits endpoint · no payment header" },
               { step: "2", text: "Server returns HTTP 402 + payment requirements" },
               { step: "3", text: "Client signs SOL transfer, retries with X-Payment header" },
               { step: "4", text: "Server verifies on-chain, returns data in <400ms" },

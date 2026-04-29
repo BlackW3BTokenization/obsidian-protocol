@@ -1,5 +1,5 @@
 /**
- * Obsidian Protocol — 5 Tokenized Precious Metals
+ * Obsidian Protocol · 5 Tokenized Precious Metals
  * BLKW3B Inc. · Backed 1:1 by AGX vault holdings
  * Canonical product suite (per Design System v1.0):
  *   xGOLD · xSLVR · xGLDD · xSLVD · xGLDB
@@ -21,6 +21,7 @@ export interface ObsidianToken {
   reserveQty:  number;   // AGX vault allocation in native units
   decimals:    number;
   description: string;
+  image:       string;   // /assets/* path · token visual
 }
 
 export const OBSIDIAN_TOKENS: ObsidianToken[] = [
@@ -40,6 +41,7 @@ export const OBSIDIAN_TOKENS: ObsidianToken[] = [
     reserveQty:  10_000,
     decimals:    6,
     description: "1 xGOLD = 1 troy oz gold bullion · AGX vault · SPL Token 2022",
+    image:       "/assets/pyramid-xgold.jpg",
   },
   {
     symbol:      "xSLVR",
@@ -57,6 +59,7 @@ export const OBSIDIAN_TOKENS: ObsidianToken[] = [
     reserveQty:  500_000,
     decimals:    6,
     description: "1 xSLVR = 1 troy oz silver bullion · AGX vault · SPL Token 2022",
+    image:       "/assets/pyramid-xslvr.jpg",
   },
   {
     symbol:      "xGLDD",
@@ -74,6 +77,7 @@ export const OBSIDIAN_TOKENS: ObsidianToken[] = [
     reserveQty:  60_000,
     decimals:    6,
     description: "1 xGLDD = 1 Gold Dollar coin · AGX vault · SPL Token 2022",
+    image:       "/assets/coin-xgldd.jpg",
   },
   {
     symbol:      "xSLVD",
@@ -91,6 +95,7 @@ export const OBSIDIAN_TOKENS: ObsidianToken[] = [
     reserveQty:  300_000,
     decimals:    6,
     description: "1 xSLVD = 1 Silver Dollar coin · AGX vault · SPL Token 2022",
+    image:       "/assets/coin-xslvd.jpg",
   },
   {
     symbol:      "xGLDB",
@@ -108,6 +113,7 @@ export const OBSIDIAN_TOKENS: ObsidianToken[] = [
     reserveQty:  2_500_000,
     decimals:    6,
     description: "1 xGLDB = 1 Goldback note (1/1000 oz gold) · AGX vault · SPL Token 2022",
+    image:       "/assets/stack-xgldb.webp",
   },
 ];
 

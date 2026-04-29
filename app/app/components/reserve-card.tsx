@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { getBranches, type AgxBranch } from "../lib/agx-api";
+import { FintechIcon } from "./fintech-icon";
 
 const MOCK_GOLD_PRICE_USD = 3178.5;
 const MOCK_RESERVE_OZ = 10000;
@@ -44,20 +45,12 @@ export function ReserveCard() {
       className="w-full border corner-brackets p-6 relative"
       style={{ background: "var(--void)", borderColor: "var(--carbon)" }}
     >
-      <span className="kanji-watermark text-[80px] -top-2 right-3" aria-hidden="true">金庫</span>
+      <span className="kanji-watermark text-[80px] -top-2 right-3" aria-hidden="true">𓅓𓇳</span>
 
       {/* Header */}
       <div className="relative flex items-center justify-between mb-5">
         <div className="flex items-center gap-3">
-          <div
-            className="hex-clip flex h-9 w-9 items-center justify-center"
-            style={{ background: "linear-gradient(135deg, var(--vault-gold), #8B6914)" }}
-          >
-            <svg width="16" height="16" viewBox="0 0 18 18" fill="none">
-              <path d="M9 1L16 5v8L9 17 2 13V5L9 1z" stroke="var(--obsidian)" strokeWidth="1.5" fill="none"/>
-              <path d="M9 6v6M6.5 7.5l2.5 4 2.5-4" stroke="var(--obsidian)" strokeWidth="1.2" strokeLinecap="round" strokeLinejoin="round"/>
-            </svg>
-          </div>
+          <FintechIcon name="safe" size={44} glow />
           <div>
             <p className="font-display text-base font-bold tracking-[0.15em]" style={{ color: "var(--gold)" }}>RESERVE ATTESTATION</p>
             <p className="text-xs mt-0.5" style={{ color: "var(--gray)" }}>AGX · UPMA physical metal · Light Protocol ZK proofs</p>
@@ -172,7 +165,7 @@ export function ReserveCard() {
 
         {branchStatus === "error" && (
           <div className="px-3 py-3 text-sm text-center" style={{ background: "var(--dark2)", border: "1px solid var(--carbon)", color: "var(--gray)" }}>
-            Could not reach AGX API — check{" "}
+            Could not reach AGX API. Check{" "}
             <code className="text-xs" style={{ color: "var(--gold)" }}>NEXT_PUBLIC_AGX_ENV</code>{" "}
             in <code className="text-xs" style={{ color: "var(--gold)" }}>.env.local</code>
           </div>

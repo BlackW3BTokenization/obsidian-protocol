@@ -2,6 +2,7 @@
 
 import { useEffect, useState, useRef } from "react";
 import { OBSIDIAN_TOKENS, totalReserveUsd } from "../lib/tokens";
+import { FintechIcon } from "./fintech-icon";
 
 const TOTAL_AGX_ACCOUNTS = 60_000;
 const ADDRESSABLE_TVL    = TOTAL_AGX_ACCOUNTS * 8_500;
@@ -51,14 +52,7 @@ export function ProtocolStats() {
         style={{ background: "rgba(0,255,136,0.06)", border: "1px solid rgba(0,255,136,0.3)" }}
       >
         <div className="flex items-center gap-3">
-          <div
-            className="hex-clip flex h-9 w-9 shrink-0 items-center justify-center"
-            style={{ background: "rgba(0,255,136,0.15)" }}
-          >
-            <svg width="18" height="18" viewBox="0 0 18 18" fill="none">
-              <path d="M3 9l4 4L15 5" stroke="var(--mint-green)" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
-            </svg>
-          </div>
+          <FintechIcon name="safe_open_coins" size={44} glow alt="Phase 1 milestone received" />
           <div>
             <p className="font-display text-sm font-bold tracking-[0.15em]" style={{ color: "var(--mint-green)" }}>
               PHASE 1 · FOUNDATION · COMPLETE
@@ -84,7 +78,7 @@ export function ProtocolStats() {
 
       {/* Main stats panel */}
       <div className="border corner-brackets p-6 relative" style={{ background: "var(--void)", borderColor: "var(--carbon)" }}>
-        <span className="kanji-watermark text-[120px] -top-4 right-4" aria-hidden="true">黒金庫</span>
+        <span className="kanji-watermark text-[120px] -top-4 right-4" aria-hidden="true">𓂀𓆣𓃭</span>
 
         {/* Hero line */}
         <div className="relative flex items-start justify-between mb-6 gap-4">
@@ -127,47 +121,73 @@ export function ProtocolStats() {
           {OBSIDIAN_TOKENS.map((token) => (
             <div
               key={token.symbol}
-              className="p-3 flex flex-col gap-1.5 corner-brackets"
+              className="flex flex-col corner-brackets overflow-hidden"
               style={{ background: "var(--void)", border: `1px solid var(--carbon)` }}
             >
-              <div className="flex items-center justify-between">
-                <div className="flex items-center gap-2">
-                  <span
-                    className="hex-clip flex items-center justify-center font-display font-black"
-                    style={{
-                      width: 22, height: 22,
-                      background: "linear-gradient(135deg, var(--vault-gold), #8B6914)",
-                      color: "var(--obsidian)",
-                      fontSize: 9,
-                    }}
-                  >
-                    {token.iconSymbol}
-                  </span>
-                  <span className="text-[10px] font-display font-bold tracking-[0.15em]" style={{ color: "var(--gold)" }}>
-                    {token.metalSymbol}
-                  </span>
-                </div>
-                <span className="text-[8px] font-display font-black tracking-[0.1em] px-1 py-0.5" style={{ background: "rgba(0,255,136,0.12)", color: "var(--mint-green)" }}>
+              {/* Asset visual */}
+              <div
+                className="relative aspect-square overflow-hidden"
+                style={{ background: "var(--obsidian)", borderBottom: "1px solid var(--carbon)" }}
+              >
+                <img
+                  src={token.image}
+                  alt={`${token.name} (${token.symbol})`}
+                  className="w-full h-full object-cover"
+                  style={{ filter: "saturate(1.1) contrast(1.05)" }}
+                  loading="lazy"
+                />
+                <div
+                  aria-hidden="true"
+                  className="pointer-events-none absolute inset-0"
+                  style={{ background: "linear-gradient(180deg, transparent 50%, rgba(8,8,8,0.7) 100%)" }}
+                />
+                <span
+                  className="absolute top-2 left-2 font-display font-black tracking-[0.15em] px-1.5 py-0.5"
+                  style={{
+                    fontSize: 8,
+                    background: "rgba(8,8,8,0.7)",
+                    color: "var(--gold)",
+                    border: "1px solid var(--gold-border)",
+                    backdropFilter: "blur(4px)",
+                  }}
+                >
+                  {token.metalSymbol}
+                </span>
+                <span
+                  className="absolute top-2 right-2 font-display font-black tracking-[0.1em] px-1 py-0.5"
+                  style={{
+                    fontSize: 8,
+                    background: "rgba(0,255,136,0.18)",
+                    color: "var(--mint-green)",
+                    border: "1px solid rgba(0,255,136,0.4)",
+                  }}
+                >
                   LIVE
                 </span>
               </div>
-              <p className="text-sm font-display font-bold tracking-[0.1em]" style={{ color: "var(--parchment)" }}>{token.symbol}</p>
-              <p className="text-[10px]" style={{ color: "var(--gray)" }}>{token.name}</p>
-              <p className="text-sm font-display font-black tabular-nums" style={{ color: "var(--gold)" }}>
-                ${token.priceUsd >= 1000
-                  ? (token.priceUsd / 1000).toFixed(2) + "k"
-                  : token.priceUsd.toFixed(2)}
-                <span className="text-[9px] font-normal ml-1" style={{ color: "var(--gray)" }}>/ {token.unitShort}</span>
-              </p>
-              <p className="text-xs font-display tabular-nums" style={{ color: token.change24h.startsWith("+") ? "var(--mint-green)" : "var(--burn-red)" }}>
-                {token.change24h}
-              </p>
-              <p className="font-mono truncate" style={{ color: "var(--gray)", fontSize: "9px" }}>
-                {token.mintAddress.slice(0, 12)}…
-              </p>
-              <p className="text-[10px]" style={{ color: "var(--gray)" }}>
-                {token.reserveQty.toLocaleString()} {token.unitShort} reserve
-              </p>
+
+              {/* Card data */}
+              <div className="p-3 flex flex-col gap-1">
+                <p className="text-sm font-display font-bold tracking-[0.1em]" style={{ color: "var(--parchment)" }}>
+                  {token.symbol}
+                </p>
+                <p className="text-[10px]" style={{ color: "var(--gray)" }}>{token.name}</p>
+                <p className="text-sm font-display font-black tabular-nums" style={{ color: "var(--gold)" }}>
+                  ${token.priceUsd >= 1000
+                    ? (token.priceUsd / 1000).toFixed(2) + "k"
+                    : token.priceUsd.toFixed(2)}
+                  <span className="text-[9px] font-normal ml-1" style={{ color: "var(--gray)" }}>/ {token.unitShort}</span>
+                </p>
+                <p className="text-xs font-display tabular-nums" style={{ color: token.change24h.startsWith("+") ? "var(--mint-green)" : "var(--burn-red)" }}>
+                  {token.change24h}
+                </p>
+                <p className="font-mono truncate" style={{ color: "var(--gray)", fontSize: "9px" }}>
+                  {token.mintAddress.slice(0, 12)}…
+                </p>
+                <p className="text-[10px]" style={{ color: "var(--gray)" }}>
+                  {token.reserveQty.toLocaleString()} {token.unitShort} reserve
+                </p>
+              </div>
             </div>
           ))}
         </div>

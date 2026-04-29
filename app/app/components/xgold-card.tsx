@@ -4,6 +4,16 @@ import { useState } from "react";
 import { useWallet } from "../lib/wallet/context";
 import { OBSIDIAN_TOKENS, type ObsidianToken } from "../lib/tokens";
 import { FEES } from "./revenue-model";
+import { FintechIcon, type FintechIconName } from "./fintech-icon";
+
+// Per-token icon mapping (filenames: goldbar_black.png, silverbar_black.png, etc.)
+const TOKEN_ICONS: Record<string, FintechIconName> = {
+  xGOLD: "goldbar",
+  xSLVR: "silverbar",
+  xGLDD: "coin_stack_gold",
+  xSLVD: "coin_stack_silver",
+  xGLDB: "cash",
+};
 
 const SOL_PRICE_USD   = 142.8;
 const MINT_FEE        = FEES.mint.bps / 10_000;
@@ -13,34 +23,26 @@ const BURN_FEE        = FEES.burn.bps / 10_000;
 function TokenPill({
   token, selected, onClick,
 }: { token: ObsidianToken; selected: boolean; onClick: () => void }) {
+  const icon = TOKEN_ICONS[token.symbol] ?? "dollar_coin";
   return (
     <button
       onClick={onClick}
-      className="flex flex-col items-center gap-1 px-3 py-2.5 transition-all text-center"
+      className="flex flex-col items-center gap-1.5 px-3 py-2.5 transition-all text-center focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2"
       style={{
         background:  selected ? "rgba(200,150,12,0.12)" : "var(--void)",
         border:      `1px solid ${selected ? "var(--vault-gold)" : "var(--carbon)"}`,
         outline:     "none",
         minWidth:    "80px",
+        outlineColor: "var(--vault-gold)",
       }}
     >
-      <span
-        className="hex-clip flex items-center justify-center font-display font-black"
-        style={{
-          width: 24, height: 24,
-          background: selected
-            ? "linear-gradient(135deg, var(--vault-gold), #8B6914)"
-            : "linear-gradient(135deg, #3a2d0a, #1a1a1a)",
-          color: selected ? "var(--obsidian)" : "var(--gray)",
-          fontSize: 10,
-        }}
-      >
-        {token.iconSymbol}
+      <span style={{ opacity: selected ? 1 : 0.45, transition: "opacity 0.15s" }}>
+        <FintechIcon name={icon} size={32} glow={selected} />
       </span>
       <span className="text-[10px] font-display font-bold tracking-[0.15em]" style={{ color: selected ? "var(--gold)" : "var(--gray)" }}>
         {token.symbol}
       </span>
-      <span className="text-[10px] font-display tabular-nums" style={{ color: selected ? "var(--gold)" : "var(--gray)" }}>
+      <span className="text-[10px] font-display tabular-nums" style={{ color: selected ? "var(--gold-light)" : "var(--gray)" }}>
         ${token.priceUsd >= 1000
           ? (token.priceUsd / 1000).toFixed(1) + "k"
           : token.priceUsd.toFixed(0)}
@@ -50,13 +52,31 @@ function TokenPill({
 }
 
 // ── Main card ──────────────────────────────────────────────────────────────
-export function XGoldCard() {
+export function XGoldCard({
+  selectedSymbol,
+  onSelectSymbol,
+}: {
+  /** Optional controlled selection. If omitted, the card manages its own state. */
+  selectedSymbol?: string;
+  onSelectSymbol?: (symbol: string) => void;
+} = {}) {
   const { status } = useWallet();
-  const [selectedIdx, setSelectedIdx]   = useState(0);
-  const [tab, setTab]                   = useState<"mint" | "burn">("mint");
-  const [amount, setAmount]             = useState("");
+  const [internalIdx, setInternalIdx] = useState(0);
+  const [tab, setTab]                 = useState<"mint" | "burn">("mint");
+  const [amount, setAmount]           = useState("");
 
+  // Resolve current token from the controlled prop if provided, else internal state.
+  const controlledIdx = selectedSymbol
+    ? OBSIDIAN_TOKENS.findIndex((t) => t.symbol === selectedSymbol)
+    : -1;
+  const selectedIdx = controlledIdx >= 0 ? controlledIdx : internalIdx;
   const token = OBSIDIAN_TOKENS[selectedIdx];
+
+  const selectByIndex = (i: number) => {
+    setAmount("");
+    if (onSelectSymbol) onSelectSymbol(OBSIDIAN_TOKENS[i].symbol);
+    else setInternalIdx(i);
+  };
 
   // Conversions
   const solAmount   = parseFloat(amount) || 0;
@@ -105,7 +125,7 @@ export function XGoldCard() {
             key={t.symbol}
             token={t}
             selected={i === selectedIdx}
-            onClick={() => { setSelectedIdx(i); setAmount(""); }}
+            onClick={() => selectByIndex(i)}
           />
         ))}
       </div>

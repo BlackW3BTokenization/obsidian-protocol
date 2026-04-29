@@ -8,7 +8,7 @@ export function VaultCard() {
       className="border corner-brackets p-6 relative"
       style={{ background: "var(--void)", borderColor: "var(--carbon)" }}
     >
-      <span className="kanji-watermark text-[80px] -top-2 right-4" aria-hidden="true">金庫</span>
+      <span className="kanji-watermark text-[80px] -top-2 right-4" aria-hidden="true">𓅓𓇳</span>
 
       <div className="relative flex items-center justify-between mb-4">
         <div>

@@ -133,7 +133,7 @@ export function RevenueModel() {
       className="w-full border corner-brackets p-6 relative"
       style={{ background: "var(--void)", borderColor: "var(--carbon)" }}
     >
-      <span className="kanji-watermark text-[100px] -top-4 right-4" aria-hidden="true">収益</span>
+      <span className="kanji-watermark text-[100px] -top-4 right-4" aria-hidden="true">𓏥𓄿</span>
 
       {/* Header */}
       <div className="relative mb-6">
