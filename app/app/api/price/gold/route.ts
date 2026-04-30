@@ -8,7 +8,7 @@
  * Devnet demo: returns mock price with realistic spread.
  */
 
-import { withX402Gate } from "../../lib/x402";
+import { withX402Gate } from "../../../lib/x402";
 
 const BASE_PRICE_USD   = 3178.5;
 const BASE_SILVER_USD  = 31.42;
