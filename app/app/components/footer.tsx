@@ -19,7 +19,7 @@ const COLS = [
     items: [
       { label: "SPL Token 2022", href: "https://spl.solana.com/token-2022", external: true, icon: "dollar_contract" as FintechIconName },
       { label: "Light Protocol", href: "https://lightprotocol.com",           external: true, icon: "lock"           as FintechIconName },
-      { label: "AGX / UPMA",     href: "https://agxlive.com",                 external: true, icon: "safe_open_coins" as FintechIconName },
+      { label: "AGX / UPMA",     href: "https://upma.org",                    external: true, icon: "safe_open_coins" as FintechIconName },
       { label: "Pyth Network",   href: "https://pyth.network",                external: true, icon: "candles"        as FintechIconName },
     ],
   },
