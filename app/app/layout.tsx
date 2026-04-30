@@ -1,4 +1,4 @@
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
 import { Chakra_Petch, Space_Grotesk } from "next/font/google";
 import "./globals.css";
 import { Providers } from "./components/providers";
@@ -26,8 +26,22 @@ export const metadata: Metadata = {
   icons: {
     icon: "/icon.svg",
     shortcut: "/icon.svg",
-    apple: "/icon.svg",
+    apple: "/assets/blkw3b-crest.webp",
   },
+  manifest: "/manifest.json",
+  appleWebApp: {
+    capable: true,
+    statusBarStyle: "black-translucent",
+    title: "Obsidian",
+  },
+};
+
+export const viewport: Viewport = {
+  width: "device-width",
+  initialScale: 1,
+  minimumScale: 1,
+  viewportFit: "cover",
+  themeColor: "#080808",
 };
 
 export default function RootLayout({
@@ -75,8 +89,13 @@ export default function RootLayout({
 
             <div className="relative z-10 flex flex-col min-h-screen">
               <Nav />
-              <main className="flex-1">{children}</main>
-              <Footer />
+              {/* pb accounts for bottom tab bar on mobile + safe area */}
+              <main className="flex-1 pb-[calc(72px+env(safe-area-inset-bottom,0px))] lg:pb-0">
+                {children}
+              </main>
+              <div className="hidden lg:block">
+                <Footer />
+              </div>
             </div>
           </div>
         </Providers>

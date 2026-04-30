@@ -119,7 +119,7 @@ export function XGoldCard({
       </div>
 
       {/* 5-token selector */}
-      <div className="flex gap-2 overflow-x-auto pb-1 mb-5" style={{ scrollbarWidth: "none" }}>
+      <div className="token-pill-scroll flex gap-2 overflow-x-auto pb-1 mb-5" style={{ scrollbarWidth: "none" }}>
         {OBSIDIAN_TOKENS.map((t, i) => (
           <TokenPill
             key={t.symbol}
@@ -183,7 +183,7 @@ export function XGoldCard({
             </p>
             <div className="flex items-center gap-3">
               <input
-                type="number" min="0" step="0.001" placeholder="0.00"
+                type="number" inputMode="decimal" min="0" step="0.001" placeholder="0.00"
                 value={amount} onChange={(e) => setAmount(e.target.value)}
                 className="flex-1 bg-transparent text-2xl font-bold outline-none tabular-nums placeholder:opacity-30"
                 style={{ color: "var(--foreground)" }}

@@ -211,3 +211,109 @@ body::after {
   from { opacity: 0; transform: translateY(12px); }
   to   { opacity: 1; transform: translateY(0);    }
 }
+
+/* ══════════════════════════════════════════════════════════════
+   MOBILE · SOLANA SEEKER · TOUCH OPTIMIZATION
+   ══════════════════════════════════════════════════════════════ */
+
+/* Safe area vars — Seeker notch, Android nav bar, iOS home indicator */
+:root {
+  --safe-top:    env(safe-area-inset-top,    0px);
+  --safe-bottom: env(safe-area-inset-bottom, 0px);
+  --safe-left:   env(safe-area-inset-left,   0px);
+  --safe-right:  env(safe-area-inset-right,  0px);
+  --bottom-nav-h: 56px;
+}
+
+/* Kill tap flash on every element */
+* {
+  -webkit-tap-highlight-color: transparent;
+}
+
+/* Smooth scroll globally */
+html {
+  scroll-behavior: smooth;
+  -webkit-text-size-adjust: 100%;
+}
+
+/* Prevent pull-to-refresh hijack on Seeker */
+body {
+  overscroll-behavior-y: none;
+}
+
+/* Momentum scrolling for all overflow containers */
+.overflow-x-auto,
+.overflow-y-auto,
+.overflow-auto {
+  -webkit-overflow-scrolling: touch;
+}
+
+/* Hide scrollbar globally but keep scroll */
+.overflow-x-auto::-webkit-scrollbar,
+.overflow-y-auto::-webkit-scrollbar {
+  display: none;
+}
+.overflow-x-auto,
+.overflow-y-auto {
+  scrollbar-width: none;
+}
+
+/* ── Bottom tab nav ────────────────────────────────────────── */
+.bottom-nav {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  z-index: 50;
+  padding-bottom: env(safe-area-inset-bottom, 0px);
+  background: rgba(8, 8, 8, 0.96);
+  border-top: 1px solid var(--carbon);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+}
+
+/* Sticky header safe-area padding for Seeker punch-hole */
+.sticky-header-safe {
+  padding-top: max(1rem, env(safe-area-inset-top));
+}
+
+/* ── Touch-friendly minimum tap targets ────────────────────── */
+@media (pointer: coarse) {
+  button, a, [role="button"] {
+    min-height: 44px;
+    min-width: 44px;
+  }
+  /* Token pill snap scroll */
+  .token-pill-scroll {
+    scroll-snap-type: x mandatory;
+    -webkit-overflow-scrolling: touch;
+  }
+  .token-pill-scroll > * {
+    scroll-snap-align: start;
+  }
+}
+
+/* ── Reduce heavy effects on mobile for perf ───────────────── */
+@media (max-width: 768px) {
+  /* Tone down backdrop blur layers */
+  .kanji-watermark {
+    opacity: 0.06;
+  }
+  /* Reduce scanline overlay perf cost */
+  body::after {
+    display: none;
+  }
+  /* Reduce grid bg on mobile */
+  .mobile-no-grid {
+    background-image: none !important;
+  }
+}
+
+/* ── Reduced motion ────────────────────────────────────────── */
+@media (prefers-reduced-motion: reduce) {
+  *, ::before, ::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}

@@ -7,7 +7,7 @@ const COLS = [
   {
     label: "PROTOCOL",
     items: [
-      { label: "BLKW3B",      href: "/",           icon: "medal"            as FintechIconName },
+      { label: "BLKW3B",      href: "/",           icon: "dollar_shield"    as FintechIconName },
       { label: "Live dApp",   href: "/protocol",   icon: "laptop_trading"   as FintechIconName },
       { label: "Reserves",    href: "/reserves",   icon: "safe"             as FintechIconName },
       { label: "Revenue",     href: "/revenue",    icon: "bar_chart"        as FintechIconName },

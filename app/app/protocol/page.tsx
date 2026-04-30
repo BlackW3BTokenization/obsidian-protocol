@@ -22,7 +22,7 @@ export default function ProtocolPage() {
     OBSIDIAN_TOKENS.find((t) => t.symbol === selectedSymbol) ?? OBSIDIAN_TOKENS[0];
 
   return (
-    <div className="mx-auto max-w-6xl px-6 py-10 md:py-14 space-y-6">
+    <div className="mx-auto max-w-6xl px-4 sm:px-6 py-6 md:py-14 space-y-6">
       {/* Page header */}
       <header className="relative mb-2 grid grid-cols-1 md:grid-cols-[minmax(0,1fr)_auto] gap-6 md:items-center">
         <div className="relative">
@@ -161,7 +161,8 @@ export default function ProtocolPage() {
           </span>
         </div>
 
-        <div className="relative overflow-x-auto">
+        {/* Desktop table */}
+        <div className="relative overflow-x-auto hidden sm:block">
           <table className="w-full text-xs font-mono">
             <thead>
               <tr style={{ color: "var(--gray)" }}>
@@ -214,6 +215,55 @@ export default function ProtocolPage() {
               })}
             </tbody>
           </table>
+        </div>
+
+        {/* Mobile cards */}
+        <div className="sm:hidden space-y-2">
+          {MOCK_TX_FEED.map((tx, i) => {
+            const typeColor =
+              tx.type === "MINT"   ? "var(--mint-green)" :
+              tx.type === "BURN"   ? "var(--burn-red)"   :
+                                     "var(--purple)";
+            return (
+              <div
+                key={i}
+                className="flex items-center justify-between px-3 py-3 gap-3"
+                style={{ background: "var(--dark2)", border: "1px solid var(--carbon)" }}
+              >
+                <div className="flex items-center gap-2.5 min-w-0">
+                  <span
+                    className="font-display px-1.5 py-0.5 text-[9px] font-black tracking-[0.15em] shrink-0"
+                    style={{
+                      background: `color-mix(in oklab, ${typeColor} 12%, transparent)`,
+                      color: typeColor,
+                      border: `1px solid ${typeColor}`,
+                    }}
+                  >
+                    {tx.type}
+                  </span>
+                  <span className="font-display text-xs font-bold shrink-0" style={{ color: "var(--parchment)" }}>
+                    {tx.token}
+                  </span>
+                  <span className="font-mono text-xs tabular-nums truncate" style={{ color: "var(--gold-light)" }}>
+                    {tx.amount}
+                  </span>
+                </div>
+                <div className="flex items-center gap-3 shrink-0">
+                  <span className="font-mono text-[10px]" style={{ color: "var(--gray)" }}>{tx.ago}</span>
+                  <a
+                    href="https://explorer.solana.com/?cluster=devnet"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    aria-label={`View ${tx.type.toLowerCase()} on Explorer`}
+                    className="font-display text-[10px] tracking-[0.15em] inline-flex items-center gap-0.5 min-h-[44px] min-w-[44px] justify-end"
+                    style={{ color: "var(--gold)" }}
+                  >
+                    ↗
+                  </a>
+                </div>
+              </div>
+            );
+          })}
         </div>
         <p className="text-[10px] mt-4 font-mono" style={{ color: "var(--gray)" }}>
           Sample feed shown for demo. Live indexer ships in Phase 2 with{" "}

@@ -70,7 +70,7 @@ export default function RevenuePage() {
   const receivedTranches = TRANCHES.filter((t) => t.status === "received").reduce((s, t) => s + t.amount, 0);
 
   return (
-    <div className="mx-auto max-w-6xl px-6 py-10 md:py-14 space-y-8">
+    <div className="mx-auto max-w-6xl px-4 sm:px-6 py-6 md:py-14 space-y-8">
       {/* Page header */}
       <header className="relative mb-2">
         <span className="kanji-watermark text-[140px] -top-6 -left-2" aria-hidden="true">𓂀𓃭</span>

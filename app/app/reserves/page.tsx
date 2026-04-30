@@ -41,7 +41,7 @@ export default function ReservesPage() {
     .join(" ");
 
   return (
-    <div className="mx-auto max-w-6xl px-6 py-10 md:py-14 space-y-6">
+    <div className="mx-auto max-w-6xl px-4 sm:px-6 py-6 md:py-14 space-y-6">
       {/* Page header */}
       <header className="relative mb-2">
         <span className="kanji-watermark text-[140px] -top-6 -left-2" aria-hidden="true">𓂀𓅓</span>

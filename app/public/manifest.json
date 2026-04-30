@@ -1,0 +1,39 @@
+{
+  "name": "BLKW3B // Obsidian Protocol",
+  "short_name": "Obsidian",
+  "description": "Tokenized precious metals on Solana. xGOLD · xSLVR · xGLDD · xSLVD · xGLDB · backed 1:1 by AGX vault reserves.",
+  "start_url": "/",
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#080808",
+  "theme_color": "#C8960C",
+  "categories": ["finance", "crypto"],
+  "icons": [
+    {
+      "src": "/assets/blkw3b-crest.webp",
+      "sizes": "192x192",
+      "type": "image/webp",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "/assets/blkw3b-crest.webp",
+      "sizes": "512x512",
+      "type": "image/webp",
+      "purpose": "any maskable"
+    }
+  ],
+  "shortcuts": [
+    {
+      "name": "Mint / Burn",
+      "short_name": "Protocol",
+      "url": "/protocol",
+      "description": "Mint or burn Obsidian tokens"
+    },
+    {
+      "name": "Reserves",
+      "short_name": "Reserves",
+      "url": "/reserves",
+      "description": "Verify AGX vault backing"
+    }
+  ]
+}
