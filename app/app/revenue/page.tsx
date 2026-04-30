@@ -20,9 +20,9 @@ function calcYear1Agx() {
 }
 
 const TRANCHES = [
-  { phase: "Phase 1 · Foundation",     icon: "safe_open_coins" as FintechIconName, amount: 45_000,  status: "received" as const, note: "Apr 9 – Apr 25 · 5 SPL Token 2022 contracts deployed",   when: "Apr 25 · 2026" },
-  { phase: "Phase 2 · Mainnet Bridge", icon: "key"             as FintechIconName, amount: 250_000, status: "pending"  as const, note: "Audit · mainnet deploy · liquidity bootstrapping",        when: "Q3 · 2026" },
-  { phase: "Phase 3 · Scale",          icon: "bar_chart"       as FintechIconName, amount: 500_000, status: "future"   as const, note: "x402 gateway · partner SDK · 60K member onboarding",      when: "Q1 · 2027" },
+  { phase: "Phase 1 · Foundation",     icon: "safe_open_coins" as FintechIconName, status: "complete" as const, note: "5 SPL Token 2022 contracts deployed · AGX partnership signed · ZK attestation live · devnet active", when: "Apr 2026" },
+  { phase: "Phase 2 · Mainnet Bridge", icon: "key"             as FintechIconName, status: "pending"  as const, note: "Security audit · mainnet deploy · Pyth oracle integration · liquidity bootstrapping",               when: "Q3 · 2026" },
+  { phase: "Phase 3 · Scale",          icon: "bar_chart"       as FintechIconName, status: "future"   as const, note: "x402 API gateway · partner SDK · 60K AGX member onboarding · DeFi collateral integrations",        when: "Q1 · 2027" },
 ] as const;
 
 const COMPARISON = [
@@ -66,8 +66,8 @@ function fmtMoney(n: number): string {
 
 export default function RevenuePage() {
   const agxYear1 = calcYear1Agx();
-  const totalTranches = TRANCHES.reduce((s, t) => s + t.amount, 0);
-  const receivedTranches = TRANCHES.filter((t) => t.status === "received").reduce((s, t) => s + t.amount, 0);
+  const completedCount = TRANCHES.filter((t) => t.status === "complete").length;
+  const totalCount = TRANCHES.length;
 
   return (
     <div className="mx-auto max-w-6xl px-4 sm:px-6 py-6 md:py-14 space-y-8">
@@ -211,29 +211,33 @@ export default function RevenuePage() {
           </div>
           <div className="text-right">
             <p className="font-display text-[10px] tracking-[0.2em] uppercase" style={{ color: "var(--gray)" }}>
-              Received / Total
+              Phases Complete
             </p>
             <p className="font-display text-xl font-black tabular-nums" style={{ color: "var(--gold-light)" }}>
-              {fmtMoney(receivedTranches)} <span className="text-xs font-normal" style={{ color: "var(--gray)" }}>/ {fmtMoney(totalTranches)}</span>
+              {completedCount} <span className="text-xs font-normal" style={{ color: "var(--gray)" }}>/ {totalCount}</span>
             </p>
           </div>
         </div>
 
         <div className="relative space-y-3">
           {TRANCHES.map((t, i) => {
-            const isReceived = t.status === "received";
-            const isPending = t.status === "pending";
+            const isComplete = t.status === "complete";
+            const isPending  = t.status === "pending";
             const accentColor =
-              isReceived ? "var(--mint-green)" :
+              isComplete ? "var(--mint-green)" :
               isPending  ? "var(--vault-gold)" :
                            "var(--gray)";
+            const statusLabel =
+              isComplete ? "COMPLETE" :
+              isPending  ? "IN MOTION" :
+                           "UPCOMING";
             return (
               <div
                 key={t.phase}
                 className="relative p-5 flex items-center justify-between flex-wrap gap-4"
                 style={{
-                  background: isReceived ? "rgba(0,255,136,0.04)" : "var(--dark2)",
-                  border: `1px solid ${isReceived ? "rgba(0,255,136,0.25)" : "var(--carbon)"}`,
+                  background: isComplete ? "rgba(0,255,136,0.04)" : "var(--dark2)",
+                  border: `1px solid ${isComplete ? "rgba(0,255,136,0.25)" : "var(--carbon)"}`,
                 }}
               >
                 <GoldTopLine />
@@ -242,22 +246,17 @@ export default function RevenuePage() {
                   <div
                     className="flex h-12 w-12 items-center justify-center shrink-0 relative"
                     style={{
-                      background: isReceived ? "rgba(0,255,136,0.08)" : "var(--gold-muted)",
-                      border: `1px solid ${isReceived ? "rgba(0,255,136,0.35)" : "var(--gold-border)"}`,
+                      background: isComplete ? "rgba(0,255,136,0.08)" : "var(--gold-muted)",
+                      border: `1px solid ${isComplete ? "rgba(0,255,136,0.35)" : "var(--gold-border)"}`,
                     }}
                   >
-                    <FintechIcon name={t.icon} size={36} glow={isReceived || isPending} />
+                    <FintechIcon name={t.icon} size={36} glow={isComplete || isPending} />
                     <span
                       className="absolute font-display font-black tabular-nums"
                       style={{
-                        bottom: -1,
-                        right: -1,
-                        fontSize: 8,
-                        letterSpacing: "0.05em",
-                        color: accentColor,
-                        background: "var(--obsidian)",
-                        padding: "1px 4px",
-                        border: `1px solid ${accentColor}`,
+                        bottom: -1, right: -1, fontSize: 8, letterSpacing: "0.05em",
+                        color: accentColor, background: "var(--obsidian)",
+                        padding: "1px 4px", border: `1px solid ${accentColor}`,
                       }}
                     >
                       0{i + 1}
@@ -267,26 +266,23 @@ export default function RevenuePage() {
                     <p className="font-display text-sm font-bold tracking-[0.1em]" style={{ color: "var(--parchment)" }}>
                       {t.phase.toUpperCase()}
                     </p>
-                    <p className="text-xs mt-1" style={{ color: "var(--gray)" }}>{t.note}</p>
+                    <p className="text-xs mt-1 max-w-md leading-relaxed" style={{ color: "var(--gray)" }}>{t.note}</p>
                     <p className="font-display text-[10px] tracking-[0.2em] mt-2 font-bold" style={{ color: accentColor }}>
                       {t.when.toUpperCase()}
                     </p>
                   </div>
                 </div>
 
-                <div className="relative flex items-center gap-3 shrink-0">
-                  <p className="font-display text-2xl font-black tabular-nums" style={{ color: isReceived ? "var(--mint-green)" : "var(--gold-light)" }}>
-                    {fmtMoney(t.amount)}
-                  </p>
+                <div className="relative shrink-0">
                   <span
-                    className="font-display px-2.5 py-1 text-[10px] font-black tracking-[0.2em]"
+                    className="font-display px-3 py-1.5 text-[10px] font-black tracking-[0.2em]"
                     style={{
-                      background: isReceived ? "rgba(0,255,136,0.15)" : isPending ? "var(--gold-muted)" : "rgba(102,102,102,0.15)",
+                      background: isComplete ? "rgba(0,255,136,0.15)" : isPending ? "var(--gold-muted)" : "rgba(102,102,102,0.15)",
                       color: accentColor,
                       border: `1px solid ${accentColor}`,
                     }}
                   >
-                    {t.status.toUpperCase()}
+                    {statusLabel}
                   </span>
                 </div>
               </div>

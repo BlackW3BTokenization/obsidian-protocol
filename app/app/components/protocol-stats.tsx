@@ -46,34 +46,58 @@ export function ProtocolStats() {
   return (
     <section ref={ref} className="w-full space-y-4">
 
-      {/* Phase 1 complete banner */}
+      {/* Live protocol status bar */}
       <div
-        className="p-4 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between"
-        style={{ background: "rgba(0,255,136,0.06)", border: "1px solid rgba(0,255,136,0.3)" }}
+        className="grid grid-cols-2 sm:grid-cols-4 gap-px"
+        style={{ background: "var(--carbon)" }}
       >
-        <div className="flex items-center gap-3">
-          <FintechIcon name="safe_open_coins" size={44} glow alt="Phase 1 milestone received" />
-          <div>
-            <p className="font-display text-sm font-bold tracking-[0.15em]" style={{ color: "var(--mint-green)" }}>
-              PHASE 1 · FOUNDATION · COMPLETE
-            </p>
-            <p className="text-xs mt-0.5" style={{ color: "var(--gray)" }}>
-              Apr 9 – Apr 25 · 5 SPL Token 2022 contracts deployed on Solana devnet · AGX partnership active
-            </p>
-          </div>
-        </div>
-        <div className="flex items-center gap-4 shrink-0">
-          <div className="text-right">
-            <p className="font-display text-[10px] uppercase tracking-[0.25em]" style={{ color: "var(--gray)" }}>Milestone</p>
-            <p className="font-display text-xl font-black tabular-nums" style={{ color: "var(--mint-green)" }}>$45,000</p>
-          </div>
-          <span
-            className="font-display px-3 py-1 text-[10px] font-black tracking-[0.2em]"
-            style={{ background: "rgba(0,255,136,0.15)", color: "var(--mint-green)", border: "1px solid rgba(0,255,136,0.3)" }}
+        {[
+          {
+            icon: "safe_open_coins" as const,
+            label: "CONTRACTS LIVE",
+            value: "5 / 5",
+            sub: "SPL Token 2022 · Solana",
+            accent: "var(--mint-green)",
+          },
+          {
+            icon: "goldbar" as const,
+            label: "BACKED BY",
+            value: "AGX VAULT",
+            sub: "1:1 physical metal · UPMA insured",
+            accent: "var(--gold-light)",
+          },
+          {
+            icon: "lock" as const,
+            label: "ZK ATTESTED",
+            value: "DAILY",
+            sub: "Light Protocol · on-chain proof",
+            accent: "var(--gold)",
+          },
+          {
+            icon: "laptop_trading" as const,
+            label: "SETTLEMENT",
+            value: "400MS",
+            sub: "Solana devnet · mainnet Q3",
+            accent: "var(--cyan)",
+          },
+        ].map(({ icon, label, value, sub, accent }) => (
+          <div
+            key={label}
+            className="flex items-center gap-3 px-4 py-3"
+            style={{ background: "rgba(0,255,136,0.04)" }}
           >
-            RECEIVED
-          </span>
-        </div>
+            <FintechIcon name={icon} size={32} glow />
+            <div className="min-w-0">
+              <p className="font-display text-[9px] uppercase tracking-[0.25em] font-bold" style={{ color: "var(--gray)" }}>
+                {label}
+              </p>
+              <p className="font-display text-sm font-black tracking-[0.1em] tabular-nums" style={{ color: accent }}>
+                {value}
+              </p>
+              <p className="text-[9px] truncate" style={{ color: "var(--gray)" }}>{sub}</p>
+            </div>
+          </div>
+        ))}
       </div>
 
       {/* Main stats panel */}
