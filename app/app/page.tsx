@@ -2,7 +2,6 @@
 
 import Link from "next/link";
 import { ProtocolStats } from "./components/protocol-stats";
-import { PaymentRails } from "./components/payment-rails";
 import { GoldTopLine, Scanlines } from "./components/primitives";
 import { OBSIDIAN_TOKENS } from "./lib/tokens";
 import { FintechIcon, type FintechIconName } from "./components/fintech-icon";
@@ -57,7 +56,7 @@ export default function PitchPage() {
               className="text-base mt-6 max-w-md leading-relaxed relative"
               style={{ color: "var(--parchment)" }}
             >
-              Stripe + Venmo for precious metals. Bullion bars, gold &amp; silver dollar coins,
+              Stripe for precious metals. Bullion bars, gold &amp; silver dollar coins,
               and Goldback notes, all on Solana. Buy, hold, send, spend, or burn to
               redeem the physical asset. Backed 1:1 by AGX vault reserves. Settled
               in 400ms.
@@ -241,11 +240,6 @@ export default function PitchPage() {
 
       {/* Phase 1 banner + 60k stats + 5-token grid + adoption bar */}
       <ProtocolStats />
-
-      {/* Stripe + Venmo payment rails */}
-      <section className="my-8">
-        <PaymentRails />
-      </section>
 
       {/* Trailing CTA */}
       <section className="my-16 grid grid-cols-1 sm:grid-cols-3 gap-3">
