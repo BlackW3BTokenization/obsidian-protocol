@@ -22,7 +22,7 @@ const spaceGrotesk = Space_Grotesk({
 export const metadata: Metadata = {
   title: "BLKW3B // Obsidian Protocol",
   description:
-    "Tokenized gold and silver on Solana. xGOLD · xSLVR · xGLDD · xSLVD · xGLDB · backed 1:1 by AGX vault reserves.",
+    "Tokenized precious metals on Solana. xGOLD · xSLVR · xGLDD · xSLVD · xGLDB · backed 1:1 by AGX vault reserves. Mint, hold, send, or burn to redeem physical metal.",
   icons: {
     icon: "/icon.svg",
     shortcut: "/icon.svg",
@@ -33,6 +33,29 @@ export const metadata: Metadata = {
     capable: true,
     statusBarStyle: "black-translucent",
     title: "Obsidian",
+  },
+  openGraph: {
+    title: "BLKW3B // Obsidian Protocol",
+    description:
+      "Tokenized precious metals on Solana. xGOLD · xSLVR · xGLDD · xSLVD · xGLDB · backed 1:1 by AGX vault reserves. Mint, hold, send, or burn to redeem physical metal.",
+    url: "https://w3bs.fun",
+    siteName: "Obsidian Protocol",
+    images: [
+      {
+        url: "https://w3bs.fun/assets/pyramid-xgold.jpg",
+        width: 1200,
+        height: 630,
+        alt: "BLKW3B Obsidian Protocol · Tokenized Precious Metals on Solana",
+      },
+    ],
+    type: "website",
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "BLKW3B // Obsidian Protocol",
+    description:
+      "Tokenized precious metals on Solana. xGOLD · xSLVR · xGLDD · xSLVD · xGLDB · backed 1:1 by AGX vault reserves.",
+    images: ["https://w3bs.fun/assets/pyramid-xgold.jpg"],
   },
 };
 
