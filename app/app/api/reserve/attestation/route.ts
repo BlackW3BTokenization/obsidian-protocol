@@ -9,7 +9,7 @@
  *   2. X-Payment header present → verify on-chain → return attestation
  */
 
-import { withX402Gate } from "../../lib/x402";
+import { withX402Gate } from "../../../lib/x402";
 
 // Mock reserve data — replace with real AGX API call once authenticated
 const RESERVE_DATA = {
