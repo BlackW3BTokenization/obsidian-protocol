@@ -56,7 +56,7 @@ export default function PitchPage() {
               className="text-base mt-6 max-w-md leading-relaxed relative"
               style={{ color: "var(--parchment)" }}
             >
-              Stripe for precious metals. Bullion bars, gold &amp; silver dollar coins,
+              Stripe + Venmo for precious metals. Bullion bars, gold &amp; silver dollar coins,
               and Goldback notes, all on Solana. Buy, hold, send, spend, or burn to
               redeem the physical asset. Backed 1:1 by AGX vault reserves. Settled
               in 400ms.
