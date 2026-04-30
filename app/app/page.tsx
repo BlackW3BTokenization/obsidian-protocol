@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import { ProtocolStats } from "./components/protocol-stats";
+import { PaymentRails } from "./components/payment-rails";
 import { GoldTopLine, Scanlines } from "./components/primitives";
 import { OBSIDIAN_TOKENS } from "./lib/tokens";
 import { FintechIcon, type FintechIconName } from "./components/fintech-icon";
@@ -240,6 +241,11 @@ export default function PitchPage() {
 
       {/* Phase 1 banner + 60k stats + 5-token grid + adoption bar */}
       <ProtocolStats />
+
+      {/* Stripe + Venmo payment rails */}
+      <section className="my-8">
+        <PaymentRails />
+      </section>
 
       {/* Trailing CTA */}
       <section className="my-16 grid grid-cols-1 sm:grid-cols-3 gap-3">
