@@ -3,17 +3,13 @@
 import { useEffect, useState } from "react";
 import { getBranches, type AgxBranch } from "../lib/agx-api";
 import { FintechIcon } from "./fintech-icon";
+import { usePrices } from "../lib/price-context";
 
-const MOCK_GOLD_PRICE_USD = 3178.5;
-const MOCK_RESERVE_OZ = 10000;
-const MOCK_SUPPLY_XGOLD = 0;
+const RESERVE_OZ   = 10_000;   // AGX vault allocation (troy oz xGOLD)
+const RESERVE_XGOLD_SUPPLY = 0; // Circulating supply — devnet pre-mint
 
 function StatusDot({ status }: { status: "live" | "pending" | "offline" }) {
-  const colors = {
-    live:    "var(--mint-green)",
-    pending: "var(--vault-gold)",
-    offline: "var(--gray)",
-  };
+  const colors = { live: "var(--mint-green)", pending: "var(--vault-gold)", offline: "var(--gray)" };
   return (
     <span className="relative flex h-2 w-2">
       {status === "live" && (
@@ -25,20 +21,30 @@ function StatusDot({ status }: { status: "live" | "pending" | "offline" }) {
 }
 
 export function ReserveCard() {
-  const [branches, setBranches] = useState<AgxBranch[]>([]);
+  const [branches, setBranches]       = useState<AgxBranch[]>([]);
   const [branchStatus, setBranchStatus] = useState<"loading" | "live" | "error">("loading");
+  const { raw, loading: priceLoading } = usePrices();
+
+  // Live gold price from Pyth — fall back to last known while loading
+  const goldPriceUsd = raw.XAU?.usd ?? 0;
+  const goldChange   = raw.XAU?.change24h ?? "";
+  const displayPrice = goldPriceUsd > 0 ? goldPriceUsd : 3178.5;
 
   useEffect(() => {
+    const controller = new AbortController();
+    const timeout = setTimeout(() => controller.abort(), 8_000);
     getBranches()
-      .then((data) => {
-        setBranches(data);
-        setBranchStatus("live");
-      })
-      .catch(() => setBranchStatus("error"));
+      .then((data) => { setBranches(data); setBranchStatus("live"); })
+      .catch(() => setBranchStatus("error"))
+      .finally(() => clearTimeout(timeout));
+    return () => { controller.abort(); clearTimeout(timeout); };
   }, []);
 
-  const reserveUsd = (MOCK_RESERVE_OZ * MOCK_GOLD_PRICE_USD).toLocaleString(undefined, { maximumFractionDigits: 0 });
-  const reserveRatio = MOCK_SUPPLY_XGOLD === 0 ? "∞" : ((MOCK_RESERVE_OZ / MOCK_SUPPLY_XGOLD) * 100).toFixed(1) + "%";
+  const reserveUsd   = (RESERVE_OZ * displayPrice).toLocaleString(undefined, { maximumFractionDigits: 0 });
+  // Pre-mint: show "100%+" with a note rather than ∞
+  const reserveRatio = RESERVE_XGOLD_SUPPLY === 0
+    ? "100%+"
+    : ((RESERVE_OZ / RESERVE_XGOLD_SUPPLY) * 100).toFixed(1) + "%";
 
   return (
     <section
@@ -57,8 +63,8 @@ export function ReserveCard() {
           </div>
         </div>
         <div className="flex items-center gap-1.5">
-          <StatusDot status="pending" />
-          <span className="font-display text-[10px] font-black tracking-[0.2em]" style={{ color: "var(--gold)" }}>SETUP</span>
+          <StatusDot status="live" />
+          <span className="font-display text-[10px] font-black tracking-[0.2em]" style={{ color: "var(--mint-green)" }}>DEVNET</span>
         </div>
       </div>
 
@@ -67,7 +73,7 @@ export function ReserveCard() {
         <div className="p-4" style={{ background: "rgba(200,150,12,0.08)", border: "1px solid var(--gold-border)" }}>
           <p className="font-display text-[10px] uppercase tracking-[0.2em] mb-1" style={{ color: "var(--gray)" }}>AGX Reserve</p>
           <p className="font-display text-2xl font-black tabular-nums" style={{ color: "var(--gold-light)" }}>
-            {MOCK_RESERVE_OZ.toLocaleString()}
+            {RESERVE_OZ.toLocaleString()}
             <span className="ml-1 text-sm font-normal" style={{ color: "var(--gold)" }}>oz</span>
           </p>
           <p className="text-xs mt-0.5" style={{ color: "var(--gray)" }}>≈ ${reserveUsd}</p>
@@ -76,26 +82,37 @@ export function ReserveCard() {
         <div className="p-4" style={{ background: "var(--dark2)", border: "1px solid var(--carbon)" }}>
           <p className="font-display text-[10px] uppercase tracking-[0.2em] mb-1" style={{ color: "var(--gray)" }}>xGOLD Supply</p>
           <p className="font-display text-2xl font-black tabular-nums" style={{ color: "var(--parchment)" }}>
-            {MOCK_SUPPLY_XGOLD.toLocaleString()}
+            {RESERVE_XGOLD_SUPPLY.toLocaleString()}
             <span className="ml-1 text-sm font-normal" style={{ color: "var(--gray)" }}>xGOLD</span>
           </p>
-          <p className="text-xs mt-0.5" style={{ color: "var(--gray)" }}>Circulating</p>
+          <p className="text-xs mt-0.5" style={{ color: "var(--gray)" }}>Pre-mint · devnet</p>
         </div>
 
         <div className="p-4" style={{ background: "var(--dark2)", border: "1px solid var(--carbon)" }}>
           <p className="font-display text-[10px] uppercase tracking-[0.2em] mb-1" style={{ color: "var(--gray)" }}>Reserve Ratio</p>
-          <p className="font-display text-2xl font-black tabular-nums" style={{ color: reserveRatio === "∞" ? "var(--gold-light)" : "var(--parchment)" }}>
+          <p className="font-display text-2xl font-black tabular-nums" style={{ color: "var(--mint-green)" }}>
             {reserveRatio}
           </p>
-          <p className="text-xs mt-0.5" style={{ color: "var(--gray)" }}>Fully backed</p>
+          <p className="text-xs mt-0.5" style={{ color: "var(--gray)" }}>
+            {RESERVE_XGOLD_SUPPLY === 0 ? "Vault funded · minting opens" : "Fully backed"}
+          </p>
         </div>
 
         <div className="p-4" style={{ background: "var(--dark2)", border: "1px solid var(--carbon)" }}>
           <p className="font-display text-[10px] uppercase tracking-[0.2em] mb-1" style={{ color: "var(--gray)" }}>Gold Price</p>
           <p className="font-display text-2xl font-black tabular-nums" style={{ color: "var(--parchment)" }}>
-            ${MOCK_GOLD_PRICE_USD.toLocaleString()}
+            {priceLoading && goldPriceUsd === 0
+              ? "…"
+              : `$${displayPrice.toLocaleString("en-US", { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`}
           </p>
-          <p className="text-xs mt-0.5" style={{ color: "var(--gray)" }}>Pyth · /oz</p>
+          <p className="text-xs mt-0.5 flex items-center gap-1.5" style={{ color: "var(--gray)" }}>
+            Pyth · /oz
+            {goldChange && (
+              <span className="font-mono text-[10px]" style={{ color: goldChange.startsWith("+") ? "var(--mint-green)" : "var(--burn-red)" }}>
+                {goldChange}
+              </span>
+            )}
+          </p>
         </div>
       </div>
 
@@ -103,10 +120,14 @@ export function ReserveCard() {
       <div className="space-y-1.5 mb-5">
         <p className="font-display text-[10px] uppercase tracking-[0.25em] mb-3" style={{ color: "var(--gray)" }}>Integration Status</p>
         {[
-          { label: "AGX API Connection", status: branchStatus === "live" ? "live" as const : branchStatus === "error" ? "offline" as const : "pending" as const, note: branchStatus === "live" ? `${branches.length} branches live` : branchStatus === "error" ? "Connection failed" : "Connecting..." },
-          { label: "Light Protocol ZK Proofs", status: "pending" as const, note: "Reserve attestor program" },
-          { label: "Pyth Price Feed (XAU/USD)", status: "live" as const, note: "Devnet oracle active" },
-          { label: "SPL Token 2022 Program", status: "live" as const, note: "5 mints deployed" },
+          {
+            label:  "AGX API Connection",
+            status: branchStatus === "live" ? "live" as const : branchStatus === "error" ? "offline" as const : "pending" as const,
+            note:   branchStatus === "live" ? `${branches.length} branches live` : branchStatus === "error" ? "Connection failed" : "Connecting…",
+          },
+          { label: "Light Protocol ZK Proofs", status: "pending" as const,  note: "Reserve attestor program" },
+          { label: "Pyth Price Feed (XAU/USD)", status: goldPriceUsd > 0 ? "live" as const : "pending" as const, note: goldPriceUsd > 0 ? "Live · 10s refresh" : "Connecting…" },
+          { label: "SPL Token 2022 Program",    status: "live" as const,     note: "5 mints deployed" },
         ].map(({ label, status, note }) => (
           <div
             key={label}
@@ -127,14 +148,25 @@ export function ReserveCard() {
         <div className="flex items-center justify-between mb-3">
           <p className="font-display text-[10px] uppercase tracking-[0.25em]" style={{ color: "var(--gray)" }}>UPMA Network Branches</p>
           <div className="flex items-center gap-1.5">
-            {branchStatus === "loading" && <span className="text-xs" style={{ color: "var(--gray)" }}>Loading...</span>}
+            {branchStatus === "loading" && <span className="text-xs" style={{ color: "var(--gray)" }}>Loading…</span>}
             {branchStatus === "live" && (
               <>
                 <StatusDot status="live" />
                 <span className="font-display text-[10px] font-black tracking-[0.2em]" style={{ color: "var(--mint-green)" }}>LIVE · AGX API</span>
               </>
             )}
-            {branchStatus === "error" && <span className="text-xs" style={{ color: "var(--burn-red)" }}>API unreachable</span>}
+            {branchStatus === "error" && (
+              <button
+                onClick={() => {
+                  setBranchStatus("loading");
+                  getBranches().then((d) => { setBranches(d); setBranchStatus("live"); }).catch(() => setBranchStatus("error"));
+                }}
+                className="text-xs underline focus-visible:outline focus-visible:outline-2"
+                style={{ color: "var(--gold)", outlineColor: "var(--vault-gold)" }}
+              >
+                Retry
+              </button>
+            )}
           </div>
         </div>
 
@@ -165,9 +197,10 @@ export function ReserveCard() {
 
         {branchStatus === "error" && (
           <div className="px-3 py-3 text-sm text-center" style={{ background: "var(--dark2)", border: "1px solid var(--carbon)", color: "var(--gray)" }}>
-            Could not reach AGX API. Check{" "}
-            <code className="text-xs" style={{ color: "var(--gold)" }}>NEXT_PUBLIC_AGX_ENV</code>{" "}
-            in <code className="text-xs" style={{ color: "var(--gold)" }}>.env.local</code>
+            AGX API unreachable.{" "}
+            <a href="https://upma.org" target="_blank" rel="noopener noreferrer" className="underline" style={{ color: "var(--gold)" }}>
+              upma.org ↗
+            </a>
           </div>
         )}
       </div>

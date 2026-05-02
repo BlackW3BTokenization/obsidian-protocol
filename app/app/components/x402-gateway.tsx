@@ -2,8 +2,7 @@
 
 import { useState } from "react";
 import { X402_PRICES } from "../lib/x402";
-
-const SOL_PRICE_USD = 142.8;
+import { usePrices } from "../lib/price-context";
 
 const ENDPOINTS = [
   {
@@ -38,17 +37,19 @@ const ENDPOINTS = [
   },
 ] as const;
 
-function lamportsToUsd(lamports: number) {
-  return ((lamports / 1e9) * SOL_PRICE_USD).toFixed(4);
-}
+const FALLBACK_SOL_USD = 142.8;
 
 function lamportsToSol(lamports: number) {
   return (lamports / 1e9).toFixed(4);
 }
 
-function dailyRevenue(pricelamports: number, callsDay: number) {
-  const solPerDay = (pricelamports / 1e9) * callsDay;
-  const usdPerDay = solPerDay * SOL_PRICE_USD;
+function lamportsToUsd(lamports: number, solUsd: number) {
+  return ((lamports / 1e9) * solUsd).toFixed(4);
+}
+
+function dailyRevenue(pricelamports: number, callsDay: number, solUsd: number) {
+  const solPerDay  = (pricelamports / 1e9) * callsDay;
+  const usdPerDay  = solPerDay * solUsd;
   const usdPerYear = usdPerDay * 365;
   return { solPerDay, usdPerDay, usdPerYear };
 }
@@ -72,11 +73,14 @@ function MethodBadge({ method }: { method: string }) {
 
 export function X402Gateway() {
   const [activeEndpoint, setActiveEndpoint] = useState(0);
-  const ep = ENDPOINTS[activeEndpoint];
-  const rev = dailyRevenue(ep.price, ep.calls_day);
+  const { solUsd } = usePrices();
+  const liveSolUsd = solUsd > 0 ? solUsd : FALLBACK_SOL_USD;
+
+  const ep  = ENDPOINTS[activeEndpoint];
+  const rev = dailyRevenue(ep.price, ep.calls_day, liveSolUsd);
 
   const totalAnnual = ENDPOINTS.reduce(
-    (sum, e) => sum + dailyRevenue(e.price, e.calls_day).usdPerYear,
+    (sum, e) => sum + dailyRevenue(e.price, e.calls_day, liveSolUsd).usdPerYear,
     0
   );
 
@@ -165,7 +169,7 @@ export function X402Gateway() {
                   {lamportsToSol(e.price)} SOL / call
                 </span>
                 <span className="text-xs" style={{ color: "var(--gray)" }}>
-                  ≈ ${lamportsToUsd(e.price)} USD
+                  ≈ ${lamportsToUsd(e.price, liveSolUsd)} USD
                 </span>
               </div>
             </button>
@@ -206,7 +210,7 @@ export function X402Gateway() {
             </p>
             <div className="space-y-2">
               {[
-                { label: "Price per call",      val: `${lamportsToSol(ep.price)} SOL ($${lamportsToUsd(ep.price)})` },
+                { label: "Price per call",      val: `${lamportsToSol(ep.price)} SOL ($${lamportsToUsd(ep.price, liveSolUsd)})` },
                 { label: "Est. calls / day",    val: ep.calls_day.toLocaleString() },
                 { label: "Revenue / day",       val: `$${rev.usdPerDay.toFixed(0)}` },
                 { label: "Revenue / year",      val: `$${Math.round(rev.usdPerYear).toLocaleString()}` },

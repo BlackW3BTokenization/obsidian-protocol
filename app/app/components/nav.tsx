@@ -5,15 +5,14 @@ import { usePathname } from "next/navigation";
 import { ClusterSelect } from "./cluster-select";
 import { WalletButton } from "./wallet-button";
 import { FintechIcon, type FintechIconName } from "./fintech-icon";
-
-const MOCK_GOLD_PRICE = 3178.5;
+import { usePrices } from "../lib/price-context";
 
 const ROUTES = [
-  { href: "/",           label: "BLKW3B",     kanji: "𓂀", icon: "dollar_shield"   as FintechIconName },
-  { href: "/protocol",   label: "PROTOCOL",   kanji: "𓂋", icon: "laptop_trading"  as FintechIconName },
-  { href: "/reserves",   label: "RESERVES",   kanji: "𓇳", icon: "safe"            as FintechIconName },
-  { href: "/revenue",    label: "REVENUE",    kanji: "𓏥", icon: "bar_chart"       as FintechIconName },
-  { href: "/developers", label: "DEV",        kanji: "𓈖", icon: "laptop_security" as FintechIconName },
+  { href: "/",           label: "BLKW3B",   kanji: "𓂀", icon: "dollar_shield"   as FintechIconName },
+  { href: "/protocol",   label: "PROTOCOL", kanji: "𓂋", icon: "laptop_trading"  as FintechIconName },
+  { href: "/reserves",   label: "RESERVES", kanji: "𓇳", icon: "safe"            as FintechIconName },
+  { href: "/revenue",    label: "REVENUE",  kanji: "𓏥", icon: "bar_chart"       as FintechIconName },
+  { href: "/developers", label: "DEV",      kanji: "𓈖", icon: "laptop_security" as FintechIconName },
 ] as const;
 
 function ObsidianLogo() {
@@ -36,9 +35,16 @@ function ObsidianLogo() {
 
 export function Nav() {
   const pathname = usePathname();
+  const { raw, loading: priceLoading } = usePrices();
+  const xauUsd = raw.XAU?.usd ?? 0;
+  const xauChange = raw.XAU?.change24h ?? "";
 
   const isActive = (href: string) =>
     href === "/" ? pathname === "/" : pathname?.startsWith(href);
+
+  const priceLabel = priceLoading || xauUsd === 0
+    ? "XAU …"
+    : `XAU $${xauUsd.toLocaleString("en-US", { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
 
   return (
     <>
@@ -99,7 +105,7 @@ export function Nav() {
 
           {/* Right cluster */}
           <div className="flex items-center gap-2 shrink-0">
-            {/* XAU price chip — hidden on small mobile */}
+            {/* Live XAU price chip */}
             <div
               className="hidden sm:flex items-center gap-2 px-2.5 py-1.5 text-[10px] font-medium font-display tracking-[0.1em]"
               style={{ background: "var(--gold-muted)", border: "1px solid var(--gold-border)", color: "var(--gold)" }}
@@ -108,7 +114,15 @@ export function Nav() {
                 <span className="animate-ping absolute inline-flex h-full w-full rounded-full opacity-75" style={{ background: "var(--vault-gold)" }} />
                 <span className="relative inline-flex rounded-full h-1.5 w-1.5" style={{ background: "var(--vault-gold)" }} />
               </span>
-              XAU ${MOCK_GOLD_PRICE.toLocaleString()}
+              {priceLabel}
+              {xauChange && (
+                <span
+                  className="text-[9px] font-mono"
+                  style={{ color: xauChange.startsWith("+") ? "var(--mint-green)" : "var(--burn-red)" }}
+                >
+                  {xauChange}
+                </span>
+              )}
             </div>
             <ClusterSelect />
             <WalletButton />
@@ -116,11 +130,8 @@ export function Nav() {
         </div>
       </header>
 
-      {/* ── Mobile bottom tab bar (lg and below) ─────────────── */}
-      <nav
-        aria-label="Primary mobile"
-        className="bottom-nav lg:hidden"
-      >
+      {/* ── Mobile bottom tab bar ─────────────────────────────── */}
+      <nav aria-label="Primary mobile" className="bottom-nav lg:hidden">
         <div className="grid grid-cols-5 h-14">
           {ROUTES.map((r) => {
             const active = isActive(r.href);
@@ -132,7 +143,6 @@ export function Nav() {
                 className="flex flex-col items-center justify-center gap-0.5 py-2 relative transition-opacity focus-visible:outline-none active:opacity-70"
                 style={{ color: active ? "var(--gold-light)" : "var(--gray)" }}
               >
-                {/* Active indicator bar at top */}
                 {active && (
                   <span
                     className="absolute top-0 left-3 right-3 h-px"

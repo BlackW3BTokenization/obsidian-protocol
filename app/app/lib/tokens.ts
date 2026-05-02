@@ -34,7 +34,7 @@ export const OBSIDIAN_TOKENS: ObsidianToken[] = [
     unit:        "troy oz",
     unitShort:   "oz",
     change24h:   "+0.42%",
-    color:       "#C8960C",
+    color:       "#C8960C",   // gold
     mintAddress: "GLD5k8aBKBJT5nuNaFNKNMTpYMML87WJ5fGxN7M6Pnw2",
     programId:   "oBSDnGLD111111111111111111111111111111111111",
     supply:      0,
@@ -52,7 +52,7 @@ export const OBSIDIAN_TOKENS: ObsidianToken[] = [
     unit:        "troy oz",
     unitShort:   "oz",
     change24h:   "-0.18%",
-    color:       "#C8960C",
+    color:       "#94A3B8",   // silver
     mintAddress: "SLVRqWf9Gj6d8XnP3K5mHeLXwFdqNV7AkCTBhMjYu2x",
     programId:   "oBSDnSLV111111111111111111111111111111111111",
     supply:      0,
@@ -70,7 +70,7 @@ export const OBSIDIAN_TOKENS: ObsidianToken[] = [
     unit:        "coin",
     unitShort:   "coin",
     change24h:   "+0.42%",
-    color:       "#C8960C",
+    color:       "#D4A030",   // gold coin — lighter gold
     mintAddress: "GLDDxNf2MjK8aP9rLv3HqC5TYeZBnVkRsWp4ExoAu1m",
     programId:   "oBSDnGLDD11111111111111111111111111111111111",
     supply:      0,
@@ -88,7 +88,7 @@ export const OBSIDIAN_TOKENS: ObsidianToken[] = [
     unit:        "coin",
     unitShort:   "coin",
     change24h:   "-0.18%",
-    color:       "#C8960C",
+    color:       "#7D9DB5",   // silver dollar — steel blue-silver
     mintAddress: "SLVDaP4kL9bM2vJw7QnYdR6TpUfC5HeBxK3ZoVr1Ng",
     programId:   "oBSDnSLVD11111111111111111111111111111111111",
     supply:      0,
@@ -106,7 +106,7 @@ export const OBSIDIAN_TOKENS: ObsidianToken[] = [
     unit:        "note",
     unitShort:   "note",
     change24h:   "+0.42%",
-    color:       "#C8960C",
+    color:       "#A87C08",   // goldback — deep antique gold
     mintAddress: "GLDB7mFnRt5PqZ2KLyXbC8HdVs9EoAjW3NuBxRvYc6p",
     programId:   "oBSDnGLDB11111111111111111111111111111111111",
     supply:      0,

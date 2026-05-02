@@ -293,6 +293,16 @@ body {
   }
 }
 
+/* ── Cross-browser scrollbar polish ────────────────────────── */
+/* Hide horizontal scrollbar on token pill row */
+.token-pill-scroll::-webkit-scrollbar { display: none; }
+
+/* Thin gold thumb for vertical overflow containers */
+.overflow-y-auto::-webkit-scrollbar        { width: 3px; }
+.overflow-y-auto::-webkit-scrollbar-track  { background: transparent; }
+.overflow-y-auto::-webkit-scrollbar-thumb  { background: var(--carbon); border-radius: 2px; }
+.overflow-y-auto::-webkit-scrollbar-thumb:hover { background: var(--vault-gold); }
+
 /* ── Reduce heavy effects on mobile for perf ───────────────── */
 @media (max-width: 768px) {
   /* Tone down backdrop blur layers */

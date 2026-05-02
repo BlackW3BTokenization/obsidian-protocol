@@ -7,6 +7,7 @@ import { VaultCard } from "../components/vault-card";
 import { ReserveCard } from "../components/reserve-card";
 import { WalletBalanceCard } from "../components/wallet-balance-card";
 import { OBSIDIAN_TOKENS } from "../lib/tokens";
+import { usePrices } from "../lib/price-context";
 
 const MOCK_TX_FEED = [
   { type: "MINT",     token: "xGOLD", amount: "2.5",    wallet: "5Vug…dD6", ago: "12s",     status: "confirmed" },
@@ -18,8 +19,11 @@ const MOCK_TX_FEED = [
 
 export default function ProtocolPage() {
   const [selectedSymbol, setSelectedSymbol] = useState<string>(OBSIDIAN_TOKENS[0].symbol);
-  const selectedToken =
-    OBSIDIAN_TOKENS.find((t) => t.symbol === selectedSymbol) ?? OBSIDIAN_TOKENS[0];
+  const selectedToken   = OBSIDIAN_TOKENS.find((t) => t.symbol === selectedSymbol) ?? OBSIDIAN_TOKENS[0];
+  const { tokenPrices } = usePrices();
+  const liveTokenPrice  = tokenPrices[selectedToken.symbol] > 0
+    ? tokenPrices[selectedToken.symbol]
+    : selectedToken.priceUsd;
 
   return (
     <div className="mx-auto max-w-6xl px-4 sm:px-6 py-6 md:py-14 space-y-6">
@@ -105,9 +109,9 @@ export default function ProtocolPage() {
                 textShadow: "0 0 12px rgba(200,150,12,0.5)",
               }}
             >
-              ${selectedToken.priceUsd >= 1000
-                ? (selectedToken.priceUsd / 1000).toFixed(2) + "k"
-                : selectedToken.priceUsd.toFixed(2)}
+              ${liveTokenPrice >= 1000
+                ? (liveTokenPrice / 1000).toFixed(2) + "k"
+                : liveTokenPrice.toFixed(2)}
             </span>
           </div>
         </div>
@@ -266,10 +270,11 @@ export default function ProtocolPage() {
           })}
         </div>
         <p className="text-[10px] mt-4 font-mono" style={{ color: "var(--gray)" }}>
-          Sample feed shown for demo. Live indexer ships in Phase 2 with{" "}
+          Illustrative feed · live on-chain indexer via{" "}
           <Link href="/developers" className="underline" style={{ color: "var(--gold)" }}>
             x402-gated streaming
-          </Link>.
+          </Link>{" "}
+          ships with mainnet launch.
         </p>
       </section>
     </div>
