@@ -1,5 +1,5 @@
-/**
- * x402 Payment Gateway — Obsidian Protocol
+﻿/**
+ * x402 Payment Gateway - Obsidian Protocol
  *
  * x402 gates premium API endpoints behind per-call SOL micropayments.
  * Any client (AI agent, DeFi protocol, dev) pays to call, server verifies
@@ -9,9 +9,9 @@
  * Package: x402-solana
  *
  * Gated endpoints:
- *   GET /api/reserve/attestation  — live reserve ratio + ZK proof hash
- *   GET /api/price/gold           — AGX-sourced gold spot price
- *   POST /api/mint/authorize      — AGX-verified mint authorization signature
+ *   GET /api/reserve/attestation  - live reserve ratio + ZK proof hash
+ *   GET /api/price/gold           - AGX-sourced gold spot price
+ *   POST /api/mint/authorize      - AGX-verified mint authorization signature
  */
 
 import { Connection, PublicKey, Transaction } from "@solana/web3.js";
@@ -22,7 +22,7 @@ import { SOLANA_DEVNET_CAIP2, SOLANA_MAINNET_CAIP2 } from "x402-solana";
 const NETWORK = process.env.SOLANA_NETWORK ?? "devnet";
 const RPC_URL = process.env.HELIUS_RPC_URL ?? "https://api.devnet.solana.com";
 
-/** Protocol treasury wallet — receives all x402 payments */
+/** Protocol treasury wallet - receives all x402 payments */
 export const PROTOCOL_TREASURY =
   process.env.PROTOCOL_TREASURY_PUBKEY ?? "11111111111111111111111111111111";
 
@@ -37,7 +37,7 @@ export const X402_PRICES = {
   reserve_attestation: 500_000,
   /** Gold price feed: 0.0001 SOL (~$0.014) */
   price_feed: 100_000,
-  /** Mint authorization: 0.001 SOL (~$0.14) — highest value call */
+  /** Mint authorization: 0.001 SOL (~$0.14) - highest value call */
   mint_authorize: 1_000_000,
 } as const;
 

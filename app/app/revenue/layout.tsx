@@ -1,7 +1,7 @@
-import type { Metadata } from "next";
+﻿import type { Metadata } from "next";
 
 export const metadata: Metadata = {
-  title: "Partnership Economics — Obsidian Protocol",
+  title: "Partnership Economics - Obsidian Protocol",
   description:
     "AGX revenue share model. Protocol fees split 80/20. At 20% AGX network adoption (12,000 accounts), projected annual revenue from mint, burn, transfer, and custody fees.",
   openGraph: {

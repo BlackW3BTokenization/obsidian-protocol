@@ -1,4 +1,4 @@
-import {
+﻿import {
   getTransactionEncoder,
   getTransactionDecoder,
   signatureBytes,
@@ -53,7 +53,7 @@ function createModifyingSigner(
           );
           const signedBytes = await session.signTransaction!(wireBytes, chain);
           const signedTx = decoder.decode(signedBytes);
-          // Return the full decoded transaction — preserving whatever the
+          // Return the full decoded transaction - preserving whatever the
           // wallet signed (including any message modifications).
           // Carry over the lifetimeConstraint from the original transaction
           // since it's runtime metadata not present in the wire format.

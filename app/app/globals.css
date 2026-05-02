@@ -1,4 +1,4 @@
-@import "tailwindcss";
+﻿@import "tailwindcss";
 
 @custom-variant dark (&:where(.dark, .dark *));
 
@@ -143,7 +143,7 @@ body::after {
   font-family: var(--font-display);
   letter-spacing: 0.05em;
 }
-/* Ancient glyph utility — Egyptian hieroglyphs, Mayan, Adinkra elements */
+/* Ancient glyph utility - Egyptian hieroglyphs, Mayan, Adinkra elements */
 .font-jp,
 .font-ancient {
   font-family: var(--font-ancient);
@@ -216,7 +216,7 @@ body::after {
    MOBILE · SOLANA SEEKER · TOUCH OPTIMIZATION
    ══════════════════════════════════════════════════════════════ */
 
-/* Safe area vars — Seeker notch, Android nav bar, iOS home indicator */
+/* Safe area vars - Seeker notch, Android nav bar, iOS home indicator */
 :root {
   --safe-top:    env(safe-area-inset-top,    0px);
   --safe-bottom: env(safe-area-inset-bottom, 0px);

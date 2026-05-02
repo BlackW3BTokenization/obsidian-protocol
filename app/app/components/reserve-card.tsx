@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 
 import { useEffect, useState } from "react";
 import { getBranches, type AgxBranch } from "../lib/agx-api";
@@ -6,7 +6,7 @@ import { FintechIcon } from "./fintech-icon";
 import { usePrices } from "../lib/price-context";
 
 const RESERVE_OZ   = 10_000;   // AGX vault allocation (troy oz xGOLD)
-const RESERVE_XGOLD_SUPPLY = 0; // Circulating supply — devnet pre-mint
+const RESERVE_XGOLD_SUPPLY = 0; // Circulating supply - devnet pre-mint
 
 function StatusDot({ status }: { status: "live" | "pending" | "offline" }) {
   const colors = { live: "var(--mint-green)", pending: "var(--vault-gold)", offline: "var(--gray)" };
@@ -25,7 +25,7 @@ export function ReserveCard() {
   const [branchStatus, setBranchStatus] = useState<"loading" | "live" | "error">("loading");
   const { raw, loading: priceLoading } = usePrices();
 
-  // Live gold price from Pyth — fall back to last known while loading
+  // Live gold price from Pyth - fall back to last known while loading
   const goldPriceUsd = raw.XAU?.usd ?? 0;
   const goldChange   = raw.XAU?.change24h ?? "";
   const displayPrice = goldPriceUsd > 0 ? goldPriceUsd : 3178.5;

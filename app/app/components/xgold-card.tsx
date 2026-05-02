@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 
 import { useState, useCallback } from "react";
 import { useWallet } from "../lib/wallet/context";
@@ -187,7 +187,7 @@ function MintReceipt({
             </div>
             {isDevnetSim && (
               <p className="text-[10px] pt-1" style={{ color: "var(--gray)" }}>
-                Devnet simulation — no real assets transferred. Amounts derived from Pyth live prices.
+                Devnet simulation - no real assets transferred. Amounts derived from Pyth live prices.
               </p>
             )}
           </div>
@@ -398,7 +398,7 @@ function BurnRedemptionFlow({
 
               <p className="text-[10px]" style={{ color: "var(--gray)" }}>
                 AGX vault team will contact you within 3–5 business days to confirm delivery logistics.
-                Devnet simulation — no real tokens burned.
+                Devnet simulation - no real tokens burned.
               </p>
 
               <button
@@ -553,14 +553,14 @@ export function XGoldCard({
   const jupTokenOut  = jupQuote ? jupQuote.outAmountFloat : null;
   const tokenOut     = solInputFloat > 0
     ? (jupTokenOut !== null ? jupTokenOut.toFixed(6) : pythTokenOut.toFixed(6))
-    : "—";
+    : "-";
   const mintFeeDisplay = solInputFloat > 0 && jupTokenOut === null ? mintFee.toFixed(7) : null;
 
   // Burn math
   const burnAmountFloat = parseFloat(amount) || 0;
   const rawSolOut       = liveSolUsd > 0 ? (burnAmountFloat * liveTokenPrice) / liveSolUsd : 0;
   const burnFee         = rawSolOut * BURN_FEE;
-  const solOut          = burnAmountFloat > 0 ? (rawSolOut - burnFee).toFixed(6) : "—";
+  const solOut          = burnAmountFloat > 0 ? (rawSolOut - burnFee).toFixed(6) : "-";
   const burnFeeDisplay  = burnAmountFloat > 0 ? burnFee.toFixed(7) : null;
   const burnUsdValue    = burnAmountFloat * liveTokenPrice;
 
@@ -848,7 +848,7 @@ export function XGoldCard({
           solOut={solOut}
           usdValue={burnUsdValue}
           wallet={wallet?.account.address as string ?? ""}
-          onClose={() => { setShowBurnFlow(false); if (solOut !== "—") setAmount(""); }}
+          onClose={() => { setShowBurnFlow(false); if (solOut !== "-") setAmount(""); }}
         />
       )}
     </>

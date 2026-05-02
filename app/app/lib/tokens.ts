@@ -1,4 +1,4 @@
-/**
+﻿/**
  * Obsidian Protocol · 5 Tokenized Precious Metals
  * BLKW3B Inc. · Backed 1:1 by AGX vault holdings
  * Canonical product suite (per Design System v1.0):
@@ -70,7 +70,7 @@ export const OBSIDIAN_TOKENS: ObsidianToken[] = [
     unit:        "coin",
     unitShort:   "coin",
     change24h:   "+0.42%",
-    color:       "#D4A030",   // gold coin — lighter gold
+    color:       "#D4A030",   // gold coin - lighter gold
     mintAddress: "GLDDxNf2MjK8aP9rLv3HqC5TYeZBnVkRsWp4ExoAu1m",
     programId:   "oBSDnGLDD11111111111111111111111111111111111",
     supply:      0,
@@ -88,7 +88,7 @@ export const OBSIDIAN_TOKENS: ObsidianToken[] = [
     unit:        "coin",
     unitShort:   "coin",
     change24h:   "-0.18%",
-    color:       "#7D9DB5",   // silver dollar — steel blue-silver
+    color:       "#7D9DB5",   // silver dollar - steel blue-silver
     mintAddress: "SLVDaP4kL9bM2vJw7QnYdR6TpUfC5HeBxK3ZoVr1Ng",
     programId:   "oBSDnSLVD11111111111111111111111111111111111",
     supply:      0,
@@ -106,7 +106,7 @@ export const OBSIDIAN_TOKENS: ObsidianToken[] = [
     unit:        "note",
     unitShort:   "note",
     change24h:   "+0.42%",
-    color:       "#A87C08",   // goldback — deep antique gold
+    color:       "#A87C08",   // goldback - deep antique gold
     mintAddress: "GLDB7mFnRt5PqZ2KLyXbC8HdVs9EoAjW3NuBxRvYc6p",
     programId:   "oBSDnGLDB11111111111111111111111111111111111",
     supply:      0,

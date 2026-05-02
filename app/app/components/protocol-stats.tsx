@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 
 import { useEffect, useState, useRef } from "react";
 import { OBSIDIAN_TOKENS, totalReserveUsd } from "../lib/tokens";
@@ -219,9 +219,9 @@ export function ProtocolStats() {
         {/* Network stats */}
         <div className="grid grid-cols-2 gap-2 sm:grid-cols-4">
           {[
-            { label: "AGX Members",       value: visible ? accounts.toLocaleString() + "+" : "—", sub: "Tokenization-ready",       gold: true  },
-            { label: "Addressable TVL",   value: visible ? `$${tvlM}M` : "—",                    sub: "At $8,500 avg holding",     gold: false },
-            { label: "Reserve (Devnet)",  value: visible ? `$${reserveM}M` : "—",                sub: "All 5 vaults allocated",    gold: false },
+            { label: "AGX Members",       value: visible ? accounts.toLocaleString() + "+" : "-", sub: "Tokenization-ready",       gold: true  },
+            { label: "Addressable TVL",   value: visible ? `$${tvlM}M` : "-",                    sub: "At $8,500 avg holding",     gold: false },
+            { label: "Reserve (Devnet)",  value: visible ? `$${reserveM}M` : "-",                sub: "All 5 vaults allocated",    gold: false },
             { label: "Tokens Deployed",   value: "5 / 5",                                        sub: "SPL Token 2022 · Devnet",   gold: false },
           ].map(({ label, value, sub, gold }) => (
             <div

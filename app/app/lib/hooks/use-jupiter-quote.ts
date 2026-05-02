@@ -1,10 +1,10 @@
-"use client";
+﻿"use client";
 
 /**
  * use-jupiter-quote.ts
  *
  * Fetches a live Jupiter swap quote: SOL → Obsidian token.
- * On devnet, BLKW3B tokens have no Jupiter liquidity — the hook returns
+ * On devnet, BLKW3B tokens have no Jupiter liquidity - the hook returns
  * `noRoute: true` and the caller falls back to Pyth-derived math.
  *
  * API: https://lite-api.jup.ag/swap/v1/quote

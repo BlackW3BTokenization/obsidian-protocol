@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 
 /**
  * use-pyth-prices.ts
@@ -7,10 +7,10 @@
  * No API key required. Refreshes every 10 seconds client-side.
  *
  * Price feed IDs (Pyth mainnet + devnet share the same IDs):
- *   XAU/USD  — 0x765d2ba906dbc32ca17cc11f5310a89e9ee1f6420508c63861f2f8ba4ee34bb2
- *   XAG/USD  — 0xf2fb02c32b055c805e7238d628e5e9dadef274376114eb1f012337cabe93871e
- *   XPT/USD  — 0x9b4d6cecdb7d3f9e92e1fc97d4b38e47c18f77d3ae2a9d4e4edaf1898ec5e4bf
- *   SOL/USD  — 0xef0d8b6fda2ceba41da15d4095d1da392a0d2f8ed0c6c7bc0f4cfac8c280b56d
+ *   XAU/USD  - 0x765d2ba906dbc32ca17cc11f5310a89e9ee1f6420508c63861f2f8ba4ee34bb2
+ *   XAG/USD  - 0xf2fb02c32b055c805e7238d628e5e9dadef274376114eb1f012337cabe93871e
+ *   XPT/USD  - 0x9b4d6cecdb7d3f9e92e1fc97d4b38e47c18f77d3ae2a9d4e4edaf1898ec5e4bf
+ *   SOL/USD  - 0xef0d8b6fda2ceba41da15d4095d1da392a0d2f8ed0c6c7bc0f4cfac8c280b56d
  */
 
 import { useEffect, useRef, useState, useCallback } from "react";

@@ -1,7 +1,7 @@
-import type { Metadata } from "next";
+﻿import type { Metadata } from "next";
 
 export const metadata: Metadata = {
-  title: "Reserve Attestation — Obsidian Protocol",
+  title: "Reserve Attestation - Obsidian Protocol",
   description:
     "AGX Trust Layer. Every Obsidian token is backed 1:1 by physical metal in AGX's insured vault. Reserve ratio attested daily via Light Protocol ZK proofs on Solana.",
   openGraph: {

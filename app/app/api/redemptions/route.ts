@@ -1,9 +1,9 @@
-/**
- * POST /api/redemptions  — file a physical redemption request
- * GET  /api/redemptions  — list all redemptions (admin use)
+﻿/**
+ * POST /api/redemptions  - file a physical redemption request
+ * GET  /api/redemptions  - list all redemptions (admin use)
  *
  * Writes to /data/redemptions.json at project root.
- * Each entry is append-only — no deletes, no edits.
+ * Each entry is append-only - no deletes, no edits.
  */
 
 import { NextRequest } from "next/server";

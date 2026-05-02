@@ -1,7 +1,7 @@
-import type { Metadata } from "next";
+﻿import type { Metadata } from "next";
 
 export const metadata: Metadata = {
-  title: "Mint · Burn · Redeem — Obsidian Protocol",
+  title: "Mint · Burn · Redeem - Obsidian Protocol",
   description:
     "Live dApp on Solana devnet. Mint xGOLD, xSLVR, xGLDD, xSLVD, and xGLDB against your AGX reserve allocation. Connect a wallet to start.",
   openGraph: {

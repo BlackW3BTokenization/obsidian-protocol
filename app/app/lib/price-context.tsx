@@ -1,8 +1,8 @@
-"use client";
+﻿"use client";
 
 /**
- * PriceContext — single source of truth for live Pyth prices.
- * Mounted once in layout. All components read from here — no duplicate polling.
+ * PriceContext - single source of truth for live Pyth prices.
+ * Mounted once in layout. All components read from here - no duplicate polling.
  */
 
 import {
