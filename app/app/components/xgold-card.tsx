@@ -5,6 +5,7 @@ import { useWallet } from "../lib/wallet/context";
 import { OBSIDIAN_TOKENS, type ObsidianToken } from "../lib/tokens";
 import { FEES } from "./revenue-model";
 import { FintechIcon, type FintechIconName } from "./fintech-icon";
+import { usePrices } from "../lib/price-context";
 
 // Per-token icon mapping (filenames: goldbar_black.png, silverbar_black.png, etc.)
 const TOKEN_ICONS: Record<string, FintechIconName> = {
@@ -15,15 +16,17 @@ const TOKEN_ICONS: Record<string, FintechIconName> = {
   xGLDB: "cash",
 };
 
-const SOL_PRICE_USD   = 142.8;
-const MINT_FEE        = FEES.mint.bps / 10_000;
-const BURN_FEE        = FEES.burn.bps / 10_000;
+const MINT_FEE = FEES.mint.bps / 10_000;
+const BURN_FEE = FEES.burn.bps / 10_000;
+
+const FALLBACK_SOL_USD = 142.8; // used only if Pyth hasn't loaded yet
 
 // ── Token selector pill ────────────────────────────────────────────────────
 function TokenPill({
-  token, selected, onClick,
-}: { token: ObsidianToken; selected: boolean; onClick: () => void }) {
+  token, selected, onClick, livePrice,
+}: { token: ObsidianToken; selected: boolean; onClick: () => void; livePrice: number }) {
   const icon = TOKEN_ICONS[token.symbol] ?? "dollar_coin";
+  const displayPrice = livePrice > 0 ? livePrice : token.priceUsd;
   return (
     <button
       onClick={onClick}
@@ -43,9 +46,9 @@ function TokenPill({
         {token.symbol}
       </span>
       <span className="text-[10px] font-display tabular-nums" style={{ color: selected ? "var(--gold-light)" : "var(--gray)" }}>
-        ${token.priceUsd >= 1000
-          ? (token.priceUsd / 1000).toFixed(1) + "k"
-          : token.priceUsd.toFixed(0)}
+        ${displayPrice >= 1000
+          ? (displayPrice / 1000).toFixed(1) + "k"
+          : displayPrice.toFixed(2)}
       </span>
     </button>
   );
@@ -61,6 +64,7 @@ export function XGoldCard({
   onSelectSymbol?: (symbol: string) => void;
 } = {}) {
   const { status } = useWallet();
+  const { tokenPrices, solUsd, raw, lastUpdated, loading: priceLoading } = usePrices();
   const [internalIdx, setInternalIdx] = useState(0);
   const [tab, setTab]                 = useState<"mint" | "burn">("mint");
   const [amount, setAmount]           = useState("");
@@ -72,21 +76,29 @@ export function XGoldCard({
   const selectedIdx = controlledIdx >= 0 ? controlledIdx : internalIdx;
   const token = OBSIDIAN_TOKENS[selectedIdx];
 
+  // Live prices — fall back to static values until Pyth loads
+  const liveTokenPrice = tokenPrices[token.symbol] > 0
+    ? tokenPrices[token.symbol]
+    : token.priceUsd;
+  const liveSolUsd = solUsd > 0 ? solUsd : FALLBACK_SOL_USD;
+  const change24h  = raw[token.metalSymbol === "XAU" || token.metalSymbol === "AUD" || token.metalSymbol === "GBK" ? "XAU" : "XAG"]?.change24h
+    ?? token.change24h;
+
   const selectByIndex = (i: number) => {
     setAmount("");
     if (onSelectSymbol) onSelectSymbol(OBSIDIAN_TOKENS[i].symbol);
     else setInternalIdx(i);
   };
 
-  // Conversions
+  // Conversions using live prices
   const solAmount   = parseFloat(amount) || 0;
-  const rawTokenOut = (solAmount * SOL_PRICE_USD) / token.priceUsd;
+  const rawTokenOut = liveSolUsd > 0 ? (solAmount * liveSolUsd) / liveTokenPrice : 0;
   const mintFee     = rawTokenOut * MINT_FEE;
   const tokenOut    = solAmount > 0 ? (rawTokenOut - mintFee).toFixed(6) : "—";
   const mintFeeDisplay = solAmount > 0 ? mintFee.toFixed(7) : null;
 
   const burnAmount  = parseFloat(amount) || 0;
-  const rawSolOut   = (burnAmount * token.priceUsd) / SOL_PRICE_USD;
+  const rawSolOut   = liveSolUsd > 0 ? (burnAmount * liveTokenPrice) / liveSolUsd : 0;
   const burnFee     = rawSolOut * BURN_FEE;
   const solOut      = burnAmount > 0 ? (rawSolOut - burnFee).toFixed(6) : "—";
   const burnFeeDisplay = burnAmount > 0 ? burnFee.toFixed(7) : null;
@@ -99,9 +111,27 @@ export function XGoldCard({
       {/* Header */}
       <div className="flex items-center justify-between mb-4">
         <div>
-          <p className="font-display text-base font-bold tracking-[0.15em]" style={{ color: "var(--gold)" }}>{token.symbol}</p>
+          <div className="flex items-center gap-2">
+            <p className="font-display text-base font-bold tracking-[0.15em]" style={{ color: "var(--gold)" }}>{token.symbol}</p>
+            <p className="font-display text-base font-black tabular-nums" style={{ color: "var(--parchment)" }}>
+              {priceLoading && liveTokenPrice === token.priceUsd
+                ? "…"
+                : `$${liveTokenPrice >= 1000 ? liveTokenPrice.toLocaleString("en-US", { minimumFractionDigits: 2, maximumFractionDigits: 2 }) : liveTokenPrice.toFixed(2)}`}
+            </p>
+            <span
+              className="text-[10px] font-mono font-bold"
+              style={{ color: change24h.startsWith("+") ? "var(--mint-green)" : "var(--burn-red)" }}
+            >
+              {change24h}
+            </span>
+          </div>
           <p className="text-xs mt-0.5" style={{ color: "var(--gray)" }}>
             {token.description}
+            {lastUpdated && (
+              <span className="ml-2 font-mono" style={{ color: "var(--gray)", fontSize: 9 }}>
+                · Pyth {lastUpdated.toLocaleTimeString()}
+              </span>
+            )}
           </p>
         </div>
         <div className="flex items-center gap-2">
@@ -126,6 +156,7 @@ export function XGoldCard({
             token={t}
             selected={i === selectedIdx}
             onClick={() => selectByIndex(i)}
+            livePrice={tokenPrices[t.symbol] ?? 0}
           />
         ))}
       </div>
@@ -238,7 +269,7 @@ export function XGoldCard({
             >
               <div className="flex justify-between text-xs">
                 <span style={{ color: "var(--muted)" }}>Rate</span>
-                <span>1 SOL = {(SOL_PRICE_USD / token.priceUsd).toFixed(6)} {token.symbol}</span>
+                <span>1 SOL = {liveSolUsd > 0 ? (liveSolUsd / liveTokenPrice).toFixed(6) : "…"} {token.symbol}</span>
               </div>
               {tab === "mint" && mintFeeDisplay && (
                 <div className="flex justify-between text-xs">

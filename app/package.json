@@ -36,6 +36,8 @@
     "start": "next start"
   },
   "dependencies": {
+    "@jup-ag/api": "^6.0.48",
+    "@pythnetwork/price-service-client": "^1.11.0",
     "@solana/kit": "^6.3.0",
     "@solana/kit-client-rpc": "^0.7.0",
     "@solana/kit-plugin-rpc": "^0.7.0",
