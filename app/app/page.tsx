@@ -5,9 +5,19 @@ import { ProtocolStats } from "./components/protocol-stats";
 import { GoldTopLine, Scanlines } from "./components/primitives";
 import { OBSIDIAN_TOKENS } from "./lib/tokens";
 import { FintechIcon, type FintechIconName } from "./components/fintech-icon";
+import { usePrices } from "./lib/price-context";
 
 export default function PitchPage() {
   const xgold = OBSIDIAN_TOKENS.find((t) => t.symbol === "xGOLD")!;
+  const { tokenPrices, raw } = usePrices();
+
+  const liveGoldPrice  = tokenPrices["xGOLD"] > 0 ? tokenPrices["xGOLD"] : xgold.priceUsd;
+  const liveChange24h  = raw.XAU?.change24h ?? xgold.change24h;
+  const liveReserveUsd = OBSIDIAN_TOKENS.reduce(
+    (s, t) => s + t.reserveQty * (tokenPrices[t.symbol] > 0 ? tokenPrices[t.symbol] : t.priceUsd),
+    0
+  );
+  const reserveLabel   = `$${(liveReserveUsd / 1_000_000).toFixed(1)}M`;
   return (
     <div className="mx-auto max-w-6xl px-6">
       {/* Hero */}
@@ -178,7 +188,9 @@ export default function PitchPage() {
                       lineHeight: 1,
                     }}
                   >
-                    ${xgold.priceUsd.toLocaleString()}
+                    ${liveGoldPrice >= 1000
+                      ? liveGoldPrice.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })
+                      : liveGoldPrice.toFixed(2)}
                   </p>
                 </div>
                 <div className="text-right">
@@ -192,11 +204,11 @@ export default function PitchPage() {
                     className="font-display font-black tabular-nums"
                     style={{
                       fontSize: 18,
-                      color: xgold.change24h.startsWith("+") ? "var(--mint-green)" : "var(--burn-red)",
+                      color: liveChange24h.startsWith("+") ? "var(--mint-green)" : "var(--burn-red)",
                       lineHeight: 1,
                     }}
                   >
-                    {xgold.change24h}
+                    {liveChange24h}
                   </p>
                 </div>
               </div>
@@ -205,7 +217,7 @@ export default function PitchPage() {
             {/* Stats row under the card */}
             <div className="grid grid-cols-3 gap-px mt-px" style={{ background: "var(--carbon)" }}>
               {[
-                { label: "AGX RESERVE",  value: "$31.7M" },
+                { label: "AGX RESERVE",  value: reserveLabel },
                 { label: "TOKENS LIVE",  value: "5 / 5" },
                 { label: "SETTLEMENT",   value: "400MS" },
               ].map((s) => (

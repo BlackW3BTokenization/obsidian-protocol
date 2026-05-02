@@ -1,8 +1,9 @@
 ﻿"use client";
 
 import { useEffect, useState, useRef } from "react";
-import { OBSIDIAN_TOKENS, totalReserveUsd } from "../lib/tokens";
+import { OBSIDIAN_TOKENS } from "../lib/tokens";
 import { FintechIcon } from "./fintech-icon";
+import { usePrices } from "../lib/price-context";
 
 const TOTAL_AGX_ACCOUNTS = 60_000;
 const ADDRESSABLE_TVL    = TOTAL_AGX_ACCOUNTS * 8_500;
@@ -39,9 +40,20 @@ export function ProtocolStats() {
     return () => obs.disconnect();
   }, []);
 
+  const { tokenPrices, raw } = usePrices();
+
+  // Map each token's metalSymbol to the correct raw Pyth feed key
+  const METAL_TO_RAW: Record<string, string> = { XAU: "XAU", XAG: "XAG", AUD: "XAU", AGD: "XAG", GBK: "XAU" };
+
+  // Live reserve total using live prices where available, fallback to static
+  const liveReserveUsd = OBSIDIAN_TOKENS.reduce(
+    (s, t) => s + t.reserveQty * (tokenPrices[t.symbol] > 0 ? tokenPrices[t.symbol] : t.priceUsd),
+    0
+  );
+
   const accounts  = useCountUp(TOTAL_AGX_ACCOUNTS, 1600, visible);
   const tvlM      = useCountUp(Math.round(ADDRESSABLE_TVL / 1_000_000), 1800, visible);
-  const reserveM  = useCountUp(Math.round(totalReserveUsd() / 1_000_000), 1500, visible);
+  const reserveM  = useCountUp(Math.round(liveReserveUsd / 1_000_000), 1500, visible);
 
   return (
     <section ref={ref} className="w-full space-y-4">
@@ -196,15 +208,24 @@ export function ProtocolStats() {
                   {token.symbol}
                 </p>
                 <p className="text-[10px]" style={{ color: "var(--gray)" }}>{token.name}</p>
-                <p className="text-sm font-display font-black tabular-nums" style={{ color: "var(--gold)" }}>
-                  ${token.priceUsd >= 1000
-                    ? (token.priceUsd / 1000).toFixed(2) + "k"
-                    : token.priceUsd.toFixed(2)}
-                  <span className="text-[9px] font-normal ml-1" style={{ color: "var(--gray)" }}>/ {token.unitShort}</span>
-                </p>
-                <p className="text-xs font-display tabular-nums" style={{ color: token.change24h.startsWith("+") ? "var(--mint-green)" : "var(--burn-red)" }}>
-                  {token.change24h}
-                </p>
+                {(() => {
+                  const livePrice   = tokenPrices[token.symbol] > 0 ? tokenPrices[token.symbol] : token.priceUsd;
+                  const rawKey      = METAL_TO_RAW[token.metalSymbol] ?? "";
+                  const liveChange  = raw[rawKey]?.change24h ?? token.change24h;
+                  return (
+                    <>
+                      <p className="text-sm font-display font-black tabular-nums" style={{ color: "var(--gold)" }}>
+                        ${livePrice >= 1000
+                          ? (livePrice / 1000).toFixed(2) + "k"
+                          : livePrice.toFixed(2)}
+                        <span className="text-[9px] font-normal ml-1" style={{ color: "var(--gray)" }}>/ {token.unitShort}</span>
+                      </p>
+                      <p className="text-xs font-display tabular-nums" style={{ color: liveChange.startsWith("+") ? "var(--mint-green)" : "var(--burn-red)" }}>
+                        {liveChange}
+                      </p>
+                    </>
+                  );
+                })()}
                 <p className="font-mono truncate" style={{ color: "var(--gray)", fontSize: "9px" }}>
                   {token.mintAddress.slice(0, 12)}…
                 </p>

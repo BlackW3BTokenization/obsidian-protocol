@@ -157,26 +157,27 @@ export function usePythPrices(): UsePythPricesReturn {
 }
 
 /**
- * Derive a USD price for each Obsidian token from raw Pyth metal prices.
- * xGOLD  = XAU/USD (1 troy oz)
- * xSLVR  = XAG/USD (1 troy oz)
- * xGLDD  = XAU/USD / 20  (1/20 oz gold coin)
- * xSLVD  = XAG/USD * 0.7734  (0.7734 oz silver dollar)
- * xGLDB  = XAU/USD / 1000 * 1.45  (1/1000 oz 24k gold + ~45% manufacturing premium)
- *          Goldbacks trade above spot: atomized gold polymer layering, serial numbers,
- *          UV security. goldback.com updates exchange rate daily at 10 AM MST.
- *          1.45x is a conservative mid-market premium based on typical retail range.
+ * Derive USD prices for Pyth-tracked Obsidian tokens from raw feed data.
+ *
+ * xGOLD  = XAU/USD  (1 troy oz gold bullion)
+ * xSLVR  = XAG/USD  (1 troy oz silver bullion)
+ * xGLDD  = XAU/USD / 20  (1/20 oz gold dollar coin)
+ * xSLVD  = XAG/USD * 0.7734  (0.7734 oz silver dollar / Morgan-size coin)
+ *
+ * xGLDB (Goldback) is NOT derived here.
+ * Goldback Inc. sets their own daily exchange rate — it is independent of XAU spot.
+ * The actual rate is fetched from /api/goldback-price (sourced from goldback.com)
+ * and merged into tokenPrices inside PriceContext (price-context.tsx).
+ * xGLDB returns 0 here so the context can override it cleanly.
  */
 export function deriveTokenPrices(raw: PythPriceMap): Record<string, number> {
   const xau = raw.XAU?.usd ?? 0;
   const xag = raw.XAG?.usd ?? 0;
-  // Goldback manufacturing premium: atomized 24k gold in polymer - trades ~40-50% over spot
-  const GOLDBACK_PREMIUM = 1.45;
   return {
     xGOLD: xau,
     xSLVR: xag,
-    xGLDD: xau > 0 ? parseFloat((xau / 20).toFixed(4))                        : 0,
-    xSLVD: xag > 0 ? parseFloat((xag * 0.7734).toFixed(4))                    : 0,
-    xGLDB: xau > 0 ? parseFloat((xau / 1000 * GOLDBACK_PREMIUM).toFixed(4))   : 0,
+    xGLDD: xau > 0 ? parseFloat((xau / 20).toFixed(4))     : 0,
+    xSLVD: xag > 0 ? parseFloat((xag * 0.7734).toFixed(4)) : 0,
+    xGLDB: 0, // overridden by PriceContext from goldback.com daily rate
   };
 }
