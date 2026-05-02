@@ -162,16 +162,21 @@ export function usePythPrices(): UsePythPricesReturn {
  * xSLVR  = XAG/USD (1 troy oz)
  * xGLDD  = XAU/USD / 20  (1/20 oz gold coin)
  * xSLVD  = XAG/USD * 0.7734  (0.7734 oz silver dollar)
- * xGLDB  = XAU/USD / 1000    (1/1000 oz Goldback note)
+ * xGLDB  = XAU/USD / 1000 * 1.45  (1/1000 oz 24k gold + ~45% manufacturing premium)
+ *          Goldbacks trade above spot: atomized gold polymer layering, serial numbers,
+ *          UV security. goldback.com updates exchange rate daily at 10 AM MST.
+ *          1.45x is a conservative mid-market premium based on typical retail range.
  */
 export function deriveTokenPrices(raw: PythPriceMap): Record<string, number> {
   const xau = raw.XAU?.usd ?? 0;
   const xag = raw.XAG?.usd ?? 0;
+  // Goldback manufacturing premium: atomized 24k gold in polymer - trades ~40-50% over spot
+  const GOLDBACK_PREMIUM = 1.45;
   return {
     xGOLD: xau,
     xSLVR: xag,
-    xGLDD: xau > 0 ? parseFloat((xau / 20).toFixed(4))   : 0,
-    xSLVD: xag > 0 ? parseFloat((xag * 0.7734).toFixed(4)) : 0,
-    xGLDB: xau > 0 ? parseFloat((xau / 1000).toFixed(6))  : 0,
+    xGLDD: xau > 0 ? parseFloat((xau / 20).toFixed(4))                        : 0,
+    xSLVD: xag > 0 ? parseFloat((xag * 0.7734).toFixed(4))                    : 0,
+    xGLDB: xau > 0 ? parseFloat((xau / 1000 * GOLDBACK_PREMIUM).toFixed(4))   : 0,
   };
 }

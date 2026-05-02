@@ -102,7 +102,7 @@ export const OBSIDIAN_TOKENS: ObsidianToken[] = [
     metalSymbol: "GBK",
     iconSymbol:  "Gb",
     name:        "Goldback",
-    priceUsd:    4.25,            // current 1-Goldback aura-layered note value
+    priceUsd:    4.60,            // 1/1000 oz 24k gold + ~45% manufacturing premium (goldback.com daily rate)
     unit:        "note",
     unitShort:   "note",
     change24h:   "+0.42%",
@@ -112,7 +112,7 @@ export const OBSIDIAN_TOKENS: ObsidianToken[] = [
     supply:      0,
     reserveQty:  2_500_000,
     decimals:    6,
-    description: "1 xGLDB = 1 Goldback note (1/1000 oz gold) · AGX vault · SPL Token 2022",
+    description: "1 xGLDB = 1 Goldback (1/1000 oz 24k gold · UT/ID/FL) · AGX vault · SPL Token 2022",
     image:       "/assets/stack-xgldb.webp",
   },
 ];
