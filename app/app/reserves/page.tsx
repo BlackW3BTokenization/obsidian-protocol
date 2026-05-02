@@ -234,7 +234,7 @@ export default function ReservesPage() {
           <span aria-hidden="true" className="absolute" style={{ width: 18, height: 18, bottom: -1, right: -1, borderBottom: "1.5px solid var(--vault-gold)", borderRight: "1.5px solid var(--vault-gold)", zIndex: 3 }} />
           <img
             src="/assets/stack-xgldb.webp"
-            alt="Goldback notes · UT/ID/FL series · physical redemption stack"
+            alt="Goldback notes · all denominations · all state series · physical redemption stack"
             className="w-full h-full object-cover"
             style={{ filter: "saturate(1.1) contrast(1.05)" }}
           />
@@ -257,7 +257,7 @@ export default function ReservesPage() {
               zIndex: 2,
             }}
           >
-            xGLDB · 1/1000 oz 24k · UT/ID/FL
+            xGLDB · all denoms · all states · 24k
           </span>
         </div>
 
@@ -288,10 +288,11 @@ export default function ReservesPage() {
           </h2>
           <p className="text-sm mt-3 leading-relaxed relative" style={{ color: "var(--parchment)" }}>
             Every Obsidian token is one-for-one redeemable for the underlying physical
-            asset. Burn xGLDB on-chain and the equivalent Goldback notes ship from
-            AGX&apos;s UPMA vault - each note is 1/1000 oz of 24k gold atomized into
-            polymer, available in Utah, Idaho, and Florida series. Bullion bars
-            (xGOLD / xSLVR) and dollar coins (xGLDD / xSLVD) follow the same flow.
+            asset. Burn xGLDB on-chain and Goldback notes ship from AGX&apos;s UPMA
+            vault - all denominations (1/4 through 100) and all state series. Each
+            note contains 24k gold atomized into polymer with UV security and unique
+            serial numbers. Bullion bars (xGOLD / xSLVR) and dollar coins
+            (xGLDD / xSLVD) follow the same flow.
           </p>
           <div className="mt-6 grid grid-cols-3 gap-px relative" style={{ background: "var(--carbon)" }}>
             {[
