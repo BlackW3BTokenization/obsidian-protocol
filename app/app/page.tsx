@@ -83,11 +83,11 @@ export default function PitchPage() {
                   href={href}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="inline-flex items-center gap-1 text-xs font-medium transition-colors hover:opacity-80 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2"
+                  className="inline-flex items-center gap-1.5 text-[10px] font-display font-bold tracking-[0.2em] uppercase transition-opacity hover:opacity-70 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2"
                   style={{ color: "var(--gold)", outlineColor: "var(--vault-gold)" }}
                 >
                   {label}
-                  <span aria-hidden="true">↗</span>
+                  <span aria-hidden="true" style={{ fontSize: 9, opacity: 0.7 }}>→</span>
                 </a>
               ))}
             </div>
