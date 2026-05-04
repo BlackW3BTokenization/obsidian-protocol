@@ -100,6 +100,38 @@ export default function RevenuePage() {
           Obsidian doesn't compete with AGX. It tokenizes AGX. Every fee streams 80/20
           to the Obsidian treasury and AGX as custodian. Same metal, more revenue layers.
         </p>
+
+        {/* Whitepaper CTA */}
+        <div className="flex flex-wrap items-center gap-3 mt-6 relative">
+          <a
+            href="/obsidian-protocol-whitepaper.pdf"
+            download="BLKW3B_Obsidian_Protocol_Whitepaper.pdf"
+            className="font-display chamfer inline-flex items-center justify-center gap-2 px-6 py-3 text-xs font-black tracking-[0.25em] transition-opacity hover:opacity-90 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2"
+            style={{
+              background: "linear-gradient(135deg, var(--vault-gold) 0%, var(--gold-light) 100%)",
+              color: "var(--obsidian)",
+              outlineColor: "var(--vault-gold)",
+              boxShadow: "0 0 40px var(--gold-glow)",
+            }}
+          >
+            DOWNLOAD WHITEPAPER
+            <span aria-hidden="true">↓</span>
+          </a>
+          <a
+            href="/obsidian-protocol-whitepaper.pdf"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="font-display inline-flex items-center justify-center gap-2 px-6 py-3 text-xs font-black tracking-[0.25em] border transition-colors hover:bg-[var(--gold-muted)] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2"
+            style={{
+              borderColor: "var(--gold-border)",
+              color: "var(--gold)",
+              outlineColor: "var(--vault-gold)",
+            }}
+          >
+            READ ONLINE
+            <span aria-hidden="true" style={{ fontSize: 9, opacity: 0.7 }}>→</span>
+          </a>
+        </div>
       </header>
 
       {/* AGX revenue share hero */}
