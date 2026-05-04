@@ -199,14 +199,12 @@ function MintModal({
 function BurnRedemptionFlow({
   token,
   burnAmount,
-  solOut,
   usdValue,
   wallet,
   onClose,
 }: {
   token:      ObsidianToken;
   burnAmount: number;
-  solOut:     string;
   usdValue:   number;
   wallet:     string;
   onClose:    () => void;
@@ -343,14 +341,14 @@ function BurnRedemptionFlow({
               </p>
             </div>
             <div className="flex-1">
-              <p style={{ color: "var(--gray)" }}>≈ USD value</p>
+              <p style={{ color: "var(--gray)" }}>Metal value</p>
               <p className="font-bold tabular-nums" style={{ color: "var(--parchment)" }}>
                 ${usdValue.toLocaleString("en-US", { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
               </p>
             </div>
             <div className="flex-1">
-              <p style={{ color: "var(--gray)" }}>SOL returned</p>
-              <p className="font-bold tabular-nums" style={{ color: "var(--gold)" }}>{solOut} SOL</p>
+              <p style={{ color: "var(--gray)" }}>You receive</p>
+              <p className="font-bold" style={{ color: "var(--gold)" }}>Physical metal</p>
             </div>
           </div>
 
@@ -532,13 +530,11 @@ export function XGoldCard({
     : "-";
   const mintFeeDisplay = solInputFloat > 0 && jupTokenOut === null ? mintFee.toFixed(7) : null;
 
-  // Burn math
+  // Burn math — physical redemption, no SOL returned
   const burnAmountFloat = parseFloat(amount) || 0;
-  const rawSolOut       = liveSolUsd > 0 ? (burnAmountFloat * liveTokenPrice) / liveSolUsd : 0;
-  const burnFee         = rawSolOut * BURN_FEE;
-  const solOut          = burnAmountFloat > 0 ? (rawSolOut - burnFee).toFixed(6) : "-";
-  const burnFeeDisplay  = burnAmountFloat > 0 ? burnFee.toFixed(7) : null;
-  const burnUsdValue    = burnAmountFloat * liveTokenPrice;
+  const burnUsdGross    = burnAmountFloat * liveTokenPrice;                    // gross metal value
+  const burnFeeUsd      = burnUsdGross * BURN_FEE;                            // 0.25% in USD
+  const burnNetUsd      = burnAmountFloat > 0 ? burnUsdGross - burnFeeUsd : 0;
 
   // ── Mint handler ─────────────────────────────────────────────────────────
   const handleMint = useCallback(async () => {
@@ -732,7 +728,7 @@ export function XGoldCard({
             <div className="rounded-xl p-4" style={{ background: "var(--accent)", border: "1px solid var(--border)" }}>
               <div className="flex items-center justify-between mb-2">
                 <p className="text-xs uppercase tracking-widest" style={{ color: "var(--muted)" }}>
-                  {tab === "mint" ? `You receive (${token.symbol})` : "You receive (SOL)"}
+                  {tab === "mint" ? `You receive (${token.symbol})` : "Physical delivery"}
                 </p>
                 {tab === "mint" && solInputFloat > 0 && (
                   <span className="text-[10px] font-mono"
@@ -741,16 +737,31 @@ export function XGoldCard({
                   </span>
                 )}
               </div>
-              <div className="flex items-center gap-3">
-                <p className="flex-1 text-2xl font-bold tabular-nums"
-                  style={{ color: tab === "mint" ? token.color : "var(--foreground)", opacity: amount ? 1 : 0.3 }}>
-                  {tab === "mint" ? tokenOut : solOut}
-                </p>
-                <span className="text-sm font-semibold px-3 py-1.5 rounded-lg"
-                  style={{ background: token.color + "20", color: token.color, border: `1px solid ${token.color}44` }}>
-                  {tab === "mint" ? token.symbol : "SOL"}
-                </span>
-              </div>
+
+              {tab === "mint" ? (
+                <div className="flex items-center gap-3">
+                  <p className="flex-1 text-2xl font-bold tabular-nums"
+                    style={{ color: token.color, opacity: amount ? 1 : 0.3 }}>
+                    {tokenOut}
+                  </p>
+                  <span className="text-sm font-semibold px-3 py-1.5 rounded-lg"
+                    style={{ background: token.color + "20", color: token.color, border: `1px solid ${token.color}44` }}>
+                    {token.symbol}
+                  </span>
+                </div>
+              ) : (
+                <div style={{ opacity: burnAmountFloat > 0 ? 1 : 0.3 }}>
+                  <p className="text-2xl font-bold tabular-nums" style={{ color: "var(--foreground)" }}>
+                    {burnNetUsd > 0
+                      ? `$${burnNetUsd.toLocaleString("en-US", { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`
+                      : "-"}
+                  </p>
+                  <p className="text-[11px] mt-1" style={{ color: "var(--gray)" }}>
+                    {token.description} · shipped by AGX vault
+                  </p>
+                </div>
+              )}
+
               {tab === "mint" && jupQuote && !noRoute && solInputFloat > 0 && (
                 <p className="text-[10px] mt-1.5 font-mono" style={{ color: "var(--gray)" }}>
                   via {jupQuote.routeLabel} · impact {jupQuote.priceImpact}
@@ -761,10 +772,12 @@ export function XGoldCard({
             {/* Fee breakdown */}
             {(solInputFloat > 0 || burnAmountFloat > 0) && (
               <div className="rounded-lg px-3 py-2.5 space-y-1" style={{ background: "var(--cream)", border: "1px solid var(--border-low)" }}>
-                <div className="flex justify-between text-xs">
-                  <span style={{ color: "var(--muted)" }}>Rate</span>
-                  <span>1 SOL = {liveSolUsd > 0 ? (liveSolUsd / liveTokenPrice).toFixed(6) : "…"} {token.symbol}</span>
-                </div>
+                {tab === "mint" && (
+                  <div className="flex justify-between text-xs">
+                    <span style={{ color: "var(--muted)" }}>Rate</span>
+                    <span>1 SOL = {liveSolUsd > 0 ? (liveSolUsd / liveTokenPrice).toFixed(6) : "…"} {token.symbol}</span>
+                  </div>
+                )}
                 {tab === "mint" && mintFeeDisplay && (
                   <div className="flex justify-between text-xs">
                     <span style={{ color: "var(--muted)" }}>Mint fee (0.25%)</span>
@@ -777,11 +790,21 @@ export function XGoldCard({
                     <span style={{ color: "var(--muted)" }}>0.50%</span>
                   </div>
                 )}
-                {tab === "burn" && burnFeeDisplay && (
-                  <div className="flex justify-between text-xs">
-                    <span style={{ color: "var(--muted)" }}>Redemption fee (0.25%)</span>
-                    <span style={{ color: token.color }}>−{burnFeeDisplay} SOL</span>
-                  </div>
+                {tab === "burn" && burnAmountFloat > 0 && (
+                  <>
+                    <div className="flex justify-between text-xs">
+                      <span style={{ color: "var(--muted)" }}>Metal value</span>
+                      <span>${burnUsdGross.toLocaleString("en-US", { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</span>
+                    </div>
+                    <div className="flex justify-between text-xs">
+                      <span style={{ color: "var(--muted)" }}>Redemption fee (0.25%)</span>
+                      <span style={{ color: "var(--burn-red)" }}>−${burnFeeUsd.toFixed(2)}</span>
+                    </div>
+                    <div className="flex justify-between text-xs">
+                      <span style={{ color: "var(--muted)" }}>Delivery</span>
+                      <span style={{ color: "var(--gray)" }}>Physical · AGX vault · 3–5 days</span>
+                    </div>
+                  </>
                 )}
                 <div className="flex justify-between text-xs">
                   <span style={{ color: "var(--muted)" }}>Transfer fee</span>
@@ -791,12 +814,6 @@ export function XGoldCard({
                   <div className="flex justify-between text-xs">
                     <span style={{ color: "var(--muted)" }}>Execution</span>
                     <span style={{ color: "var(--gray)" }}>Devnet simulation</span>
-                  </div>
-                )}
-                {tab === "burn" && burnAmountFloat > 0 && (
-                  <div className="flex justify-between text-xs">
-                    <span style={{ color: "var(--muted)" }}>Delivery</span>
-                    <span style={{ color: "var(--gray)" }}>Physical · AGX vault</span>
                   </div>
                 )}
               </div>
@@ -847,10 +864,9 @@ export function XGoldCard({
         <BurnRedemptionFlow
           token={token}
           burnAmount={burnAmountFloat}
-          solOut={solOut}
-          usdValue={burnUsdValue}
+          usdValue={burnUsdGross}
           wallet={wallet?.account.address as string ?? ""}
-          onClose={() => { setShowBurnFlow(false); if (solOut !== "-") setAmount(""); }}
+          onClose={() => { setShowBurnFlow(false); if (burnAmountFloat > 0) setAmount(""); }}
         />
       )}
     </>
