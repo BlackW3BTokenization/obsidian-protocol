@@ -102,7 +102,7 @@ export const OBSIDIAN_TOKENS: ObsidianToken[] = [
     metalSymbol: "GBK",
     iconSymbol:  "Gb",
     name:        "Goldback",
-    priceUsd:    9.05,            // fallback only — live price = XAU × 0.002742 via Pyth (1/1000 oz + premium)
+    priceUsd:    9.05,            // fallback only — live price = XAU × 0.002005 via Pyth (calibrated 2026-05-04)
     unit:        "note",
     unitShort:   "note",
     change24h:   "+0.42%",

@@ -163,15 +163,14 @@ export function usePythPrices(): UsePythPricesReturn {
  * xSLVR  = XAG/USD  (1 troy oz silver bullion)
  * xGLDD  = XAU/USD / 20  (1/20 oz gold dollar coin)
  * xSLVD  = XAG/USD * 0.7734  (0.7734 oz silver dollar / Morgan-size coin)
- * xGLDB  = XAU/USD * GOLDBACK_RATIO  (1 Goldback note = 1/1000 oz gold + premium)
+ * xGLDB  = XAU/USD * GOLDBACK_RATIO  (1 Goldback note tracks live gold price)
  *
  * Goldback ratio derivation:
- *   1 Goldback = 1/1000 troy oz of 24k gold × ~2.742 premium multiplier
- *   = XAU × 0.002742
- *   Calibrated to goldback.com exchange rate: at XAU $3,300 → xGLDB $9.05 ✓
+ *   Calibrated to goldback.com exchange rate: XAU $4,514.68 → xGLDB $9.05 (2026-05-04)
+ *   Ratio = 9.05 / 4514.68 = 0.002005
  *   Tracks live gold price movement via Pyth every 10 seconds.
  */
-const GOLDBACK_RATIO = 0.002742; // 1/1000 oz × ~2.742 premium
+const GOLDBACK_RATIO = 0.002005; // calibrated: XAU $4,514.68 → xGLDB $9.05 (2026-05-04)
 
 export function deriveTokenPrices(raw: PythPriceMap): Record<string, number> {
   const xau = raw.XAU?.usd ?? 0;
