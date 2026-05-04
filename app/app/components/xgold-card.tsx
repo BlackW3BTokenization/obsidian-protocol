@@ -1,15 +1,12 @@
 ﻿"use client";
 
 import { useState, useCallback, useEffect } from "react";
-import { address, getProgramDerivedAddress, getAddressEncoder, AccountRole } from "@solana/kit";
-import type { Instruction } from "@solana/kit";
 import { useWallet } from "../lib/wallet/context";
 import { OBSIDIAN_TOKENS, type ObsidianToken } from "../lib/tokens";
 import { FEES } from "./revenue-model";
 import { FintechIcon, type FintechIconName } from "./fintech-icon";
 import { usePrices } from "../lib/price-context";
 import { useJupiterQuote } from "../lib/hooks/use-jupiter-quote";
-import { useSendTransaction } from "../lib/hooks/use-send-transaction";
 import type { RedemptionRecord } from "../api/redemptions/route";
 
 // Per-token icon mapping
@@ -478,7 +475,6 @@ export function XGoldCard({
   onSelectSymbol?: (symbol: string) => void;
 } = {}) {
   const { status, wallet } = useWallet();
-  const { send, isSending } = useSendTransaction();
   const { tokenPrices, solUsd, raw, lastUpdated, loading: priceLoading } = usePrices();
   const [internalIdx, setInternalIdx] = useState(0);
   const [tab, setTab]                 = useState<"mint" | "burn">("mint");
@@ -536,67 +532,29 @@ export function XGoldCard({
   const burnFeeUsd      = burnUsdGross * BURN_FEE;                            // 0.25% in USD
   const burnNetUsd      = burnAmountFloat > 0 ? burnUsdGross - burnFeeUsd : 0;
 
-  // ── Mint handler ─────────────────────────────────────────────────────────
+  // ── Mint handler — calls server-side /api/mint (mint authority holds the keypair)
   const handleMint = useCallback(async () => {
     if (status !== "connected" || !wallet || solInputFloat <= 0) return;
     setTxSig(""); setTxError(""); setMintStage("building");
 
     try {
-      const walletAddr    = wallet.account.address;
-      const mintAddr      = address(token.mintAddress);
-      const encoder       = getAddressEncoder();
-      const TOKEN_2022    = address("TokenzQdBNbLqP5VEhdkAS6EPFLC1PHnBqCXEpPxuEb");
-      const ATA_PROGRAM   = address("ATokenGPvbdGVxr1b2hvZbsiqW5xWH25efTNsLJe8bXh");
-      const SYSTEM_PROG   = address("11111111111111111111111111111111");
+      const tokenAmt = jupTokenOut !== null ? jupTokenOut : pythTokenOut;
+      setMintStage("signing");
 
-      // Derive associated token account
-      const [ataAddr] = await getProgramDerivedAddress({
-        programAddress: ATA_PROGRAM,
-        seeds: [
-          encoder.encode(walletAddr),
-          encoder.encode(TOKEN_2022),
-          encoder.encode(mintAddr),
-        ],
+      const res = await fetch("/api/mint", {
+        method:  "POST",
+        headers: { "Content-Type": "application/json" },
+        body:    JSON.stringify({
+          tokenSymbol:   token.symbol,
+          walletAddress: wallet.account.address,
+          tokenAmount:   tokenAmt,
+        }),
       });
 
-      // Token amount (Jupiter quote preferred, Pyth fallback)
-      const tokenAmt  = jupTokenOut !== null ? jupTokenOut : pythTokenOut;
-      const amountU64 = BigInt(Math.round(tokenAmt * Math.pow(10, token.decimals)));
+      const data = await res.json() as { ok: boolean; signature?: string; error?: string };
+      if (!res.ok || !data.ok) throw new Error(data.error ?? "Mint API error");
 
-      // MintTo instruction data: discriminator 7 + u64 LE
-      const mintData = new Uint8Array(9);
-      mintData[0] = 7;
-      new DataView(mintData.buffer).setBigUint64(1, amountU64, true);
-
-      const txInstructions: Instruction[] = [
-        // CreateAssociatedTokenAccountIdempotent
-        {
-          programAddress: ATA_PROGRAM,
-          accounts: [
-            { address: walletAddr, role: AccountRole.WRITABLE_SIGNER },
-            { address: ataAddr,    role: AccountRole.WRITABLE },
-            { address: walletAddr, role: AccountRole.READONLY },
-            { address: mintAddr,   role: AccountRole.READONLY },
-            { address: SYSTEM_PROG, role: AccountRole.READONLY },
-            { address: TOKEN_2022,  role: AccountRole.READONLY },
-          ],
-          data: new Uint8Array([1]), // CreateIdempotent
-        },
-        // MintTo (Token-2022)
-        {
-          programAddress: TOKEN_2022,
-          accounts: [
-            { address: mintAddr,   role: AccountRole.WRITABLE },
-            { address: ataAddr,    role: AccountRole.WRITABLE },
-            { address: walletAddr, role: AccountRole.READONLY_SIGNER },
-          ],
-          data: mintData,
-        },
-      ];
-
-      setMintStage("signing");
-      const sig = await send({ instructions: txInstructions });
-      setTxSig(String(sig));
+      setTxSig(data.signature ?? "");
       setMintStage("done");
     } catch (err) {
       setTxError(
@@ -607,7 +565,7 @@ export function XGoldCard({
 
     // Modal only appears after final resolution
     setShowMintReceipt(true);
-  }, [status, wallet, solInputFloat, token, send, pythTokenOut, jupTokenOut]);
+  }, [status, wallet, solInputFloat, token, pythTokenOut, jupTokenOut]);
 
   const closeMintReceipt = useCallback(() => {
     setShowMintReceipt(false);
@@ -616,7 +574,7 @@ export function XGoldCard({
     setTxSig(""); setTxError("");
   }, [mintStage]);
 
-  const isExecuting = isSending || mintStage === "building" || mintStage === "signing";
+  const isExecuting = mintStage === "building" || mintStage === "signing";
 
   return (
     <>
