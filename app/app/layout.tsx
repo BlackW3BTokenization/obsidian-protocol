@@ -1,14 +1,14 @@
 import type { Metadata, Viewport } from "next";
-import { Chakra_Petch, Space_Grotesk } from "next/font/google";
+import { Bebas_Neue, Space_Grotesk } from "next/font/google";
 import "./globals.css";
 import { Providers } from "./components/providers";
 import { Nav } from "./components/nav";
 import { Footer } from "./components/footer";
 
-const chakraPetch = Chakra_Petch({
-  variable: "--font-chakra",
+const bebasNeue = Bebas_Neue({
+  variable: "--font-bebas",
   subsets: ["latin"],
-  weight: ["300", "400", "500", "600", "700"],
+  weight: "400",
   display: "swap",
 });
 
@@ -82,7 +82,7 @@ export default function RootLayout({
           rel="stylesheet"
         />
       </head>
-      <body className={`${chakraPetch.variable} ${spaceGrotesk.variable} antialiased`}>
+      <body className={`${bebasNeue.variable} ${spaceGrotesk.variable} antialiased`}>
         <Providers>
           <div
             className="relative min-h-screen flex flex-col"

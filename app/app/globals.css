@@ -54,7 +54,7 @@
 
   /* Fonts */
   --font-sans:    var(--font-space-grotesk), system-ui, sans-serif;
-  --font-display: var(--font-chakra), sans-serif;
+  --font-display: var(--font-bebas), sans-serif;
   --font-ancient: 'Noto Sans Egyptian Hieroglyphs', 'Segoe UI Symbol', serif;
   --font-jp:      'Noto Sans Egyptian Hieroglyphs', 'Segoe UI Symbol', serif;
   --font-mono:    ui-monospace, 'SF Mono', Menlo, monospace;
