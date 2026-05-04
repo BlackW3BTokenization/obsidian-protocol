@@ -1,12 +1,15 @@
 ﻿"use client";
 
-import { useState, useCallback } from "react";
+import { useState, useCallback, useEffect } from "react";
+import { address, getProgramDerivedAddress, getAddressEncoder, AccountRole } from "@solana/kit";
+import type { Instruction } from "@solana/kit";
 import { useWallet } from "../lib/wallet/context";
 import { OBSIDIAN_TOKENS, type ObsidianToken } from "../lib/tokens";
 import { FEES } from "./revenue-model";
 import { FintechIcon, type FintechIconName } from "./fintech-icon";
 import { usePrices } from "../lib/price-context";
-import { useJupiterQuote, fetchJupiterSwapTx } from "../lib/hooks/use-jupiter-quote";
+import { useJupiterQuote } from "../lib/hooks/use-jupiter-quote";
+import { useSendTransaction } from "../lib/hooks/use-send-transaction";
 import type { RedemptionRecord } from "../api/redemptions/route";
 
 // Per-token icon mapping
@@ -26,11 +29,9 @@ const FALLBACK_SOL_USD = 142.8;
 // ── Stage types ─────────────────────────────────────────────────────────────
 type MintStage =
   | "idle"
-  | "fetching"
+  | "building"
   | "signing"
-  | "confirming"
   | "done"
-  | "simulated"
   | "error";
 
 type BurnStage =
@@ -90,35 +91,25 @@ function TokenPill({
   );
 }
 
-// ── Mint tx receipt overlay ──────────────────────────────────────────────────
-function MintReceipt({
-  stage, sig, tokenSymbol, tokenAmount, solAmount, error, isDevnetSim, onClose,
+// ── Mint confirmation modal (shown only after done / error) ─────────────────
+function MintModal({
+  stage, sig, tokenSymbol, tokenAmount, solAmount, error, onClose,
 }: {
-  stage:       MintStage;
+  stage:       "done" | "error";
   sig:         string;
   tokenSymbol: string;
   tokenAmount: string;
   solAmount:   string;
   error:       string;
-  isDevnetSim: boolean;
   onClose:     () => void;
 }) {
-  const solscanUrl = sig
-    ? `https://solscan.io/tx/${sig}${isDevnetSim ? "?cluster=devnet" : ""}`
-    : null;
+  useEffect(() => {
+    const onKey = (e: KeyboardEvent) => { if (e.key === "Escape") onClose(); };
+    window.addEventListener("keydown", onKey);
+    return () => window.removeEventListener("keydown", onKey);
+  }, [onClose]);
 
-  const stageLabel: Record<MintStage, string> = {
-    idle:       "",
-    fetching:   "Fetching quote…",
-    signing:    "Sign in wallet…",
-    confirming: "Confirming on-chain…",
-    done:       "Minted!",
-    simulated:  "Simulation complete",
-    error:      "Error",
-  };
-
-  const isDone    = stage === "done" || stage === "simulated";
-  const isLoading = stage === "fetching" || stage === "signing" || stage === "confirming";
+  const solscanUrl = sig ? `https://solscan.io/tx/${sig}?cluster=devnet` : null;
 
   return (
     <div
@@ -130,89 +121,74 @@ function MintReceipt({
         className="w-full max-w-sm corner-brackets p-5 space-y-4"
         style={{ background: "var(--void)", border: "1px solid var(--carbon)" }}
       >
+        {/* Header */}
         <div className="flex items-center justify-between">
-          <span className="text-[10px] font-display font-black tracking-[0.2em]" style={{ color: "var(--gold)" }}>
-            {isDevnetSim ? "DEVNET SIMULATION" : "MINT TRANSACTION"}
+          <span
+            className="text-[10px] font-display font-black tracking-[0.2em]"
+            style={{ color: stage === "done" ? "var(--mint-green)" : "var(--burn-red)" }}
+          >
+            {stage === "done" ? "MINTED" : "TRANSACTION FAILED"}
           </span>
-          {isDone && (
-            <button onClick={onClose} className="text-xs px-2 py-1" style={{ color: "var(--gray)", border: "1px solid var(--carbon)" }} aria-label="Close">✕</button>
-          )}
+          <button
+            onClick={onClose}
+            className="text-xs px-2 py-1"
+            style={{ color: "var(--gray)", border: "1px solid var(--carbon)" }}
+            aria-label="Close"
+          >
+            ✕
+          </button>
         </div>
 
-        <div className="flex items-center gap-3">
-          {isLoading && (
-            <span className="relative flex h-3 w-3 flex-shrink-0">
-              <span className="animate-ping absolute inline-flex h-full w-full rounded-full opacity-75" style={{ background: "var(--vault-gold)" }} />
-              <span className="relative inline-flex rounded-full h-3 w-3" style={{ background: "var(--vault-gold)" }} />
-            </span>
-          )}
-          {isDone   && <span style={{ color: "var(--mint-green)" }}>✓</span>}
-          {stage === "error" && <span style={{ color: "var(--burn-red)" }}>✗</span>}
-          <span className="text-sm font-display font-bold" style={{ color: "var(--parchment)" }}>
-            {stage === "error" ? error : stageLabel[stage]}
-          </span>
-        </div>
-
-        {(isLoading || isDone) && (
-          <div className="space-y-1.5">
-            {(["fetching", "signing", "confirming", "done"] as MintStage[]).map((s, i) => {
-              const order   = ["fetching", "signing", "confirming", "done", "simulated"];
-              const current = order.indexOf(stage);
-              const idx     = order.indexOf(s);
-              const isPast  = idx < current;
-              const isAct   = idx === current;
-              const labels  = ["Fetching quote", "Signing transaction", "Confirming on-chain", "Complete"];
-              return (
-                <div key={s} className="flex items-center gap-2 text-xs">
-                  <span className="w-4 h-4 rounded-full flex items-center justify-center text-[10px] font-bold flex-shrink-0"
-                    style={{ background: isPast || isAct ? "var(--vault-gold)" : "var(--carbon)", color: isPast || isAct ? "#0c0c0e" : "var(--gray)" }}>
-                    {isPast ? "✓" : i + 1}
-                  </span>
-                  <span style={{ color: isAct ? "var(--parchment)" : isPast ? "var(--gold-light)" : "var(--gray)" }}>{labels[i]}</span>
-                </div>
-              );
-            })}
-          </div>
-        )}
-
-        {isDone && solAmount && tokenAmount && (
-          <div className="rounded-lg p-3 space-y-1.5 text-xs" style={{ background: "rgba(200,150,12,0.08)", border: "1px solid var(--gold-border)" }}>
-            <div className="flex justify-between">
-              <span style={{ color: "var(--gray)" }}>You paid</span>
-              <span style={{ color: "var(--parchment)" }}>{solAmount} SOL</span>
+        {/* Success */}
+        {stage === "done" && (
+          <>
+            <div className="p-3 space-y-1.5 text-xs" style={{ background: "rgba(200,150,12,0.08)", border: "1px solid var(--gold-border)" }}>
+              <div className="flex justify-between">
+                <span style={{ color: "var(--gray)" }}>You paid</span>
+                <span style={{ color: "var(--parchment)" }}>{solAmount} SOL</span>
+              </div>
+              <div className="flex justify-between">
+                <span style={{ color: "var(--gray)" }}>You received</span>
+                <span style={{ color: "var(--gold)" }}>{tokenAmount} {tokenSymbol}</span>
+              </div>
             </div>
-            <div className="flex justify-between">
-              <span style={{ color: "var(--gray)" }}>You received</span>
-              <span style={{ color: "var(--gold)" }}>{tokenAmount} {tokenSymbol}</span>
-            </div>
-            {isDevnetSim && (
-              <p className="text-[10px] pt-1" style={{ color: "var(--gray)" }}>
-                Devnet simulation - no real assets transferred. Amounts derived from Pyth live prices.
-              </p>
+
+            {sig && solscanUrl && (
+              <a
+                href={solscanUrl}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="flex items-center gap-2 text-xs font-mono hover:underline"
+                style={{ color: "var(--gold-light)" }}
+              >
+                <span style={{ color: "var(--gray)" }}>Tx</span>
+                {sig.slice(0, 8)}…{sig.slice(-8)}
+                <span style={{ fontSize: 10 }}>↗</span>
+              </a>
             )}
-          </div>
+
+            <button
+              onClick={onClose}
+              className="w-full py-2.5 text-sm font-bold font-display tracking-[0.1em]"
+              style={{ background: "var(--vault-gold)", color: "#0c0c0e" }}
+            >
+              DONE
+            </button>
+          </>
         )}
 
-        {sig && solscanUrl && (
-          <a href={solscanUrl} target="_blank" rel="noopener noreferrer"
-            className="flex items-center gap-2 text-xs font-mono hover:underline" style={{ color: "var(--gold-light)" }}>
-            <span style={{ color: "var(--gray)" }}>Tx</span>
-            {sig.slice(0, 8)}…{sig.slice(-8)}
-            <span style={{ fontSize: 10 }}>↗</span>
-          </a>
-        )}
-
-        {isDone && (
-          <button onClick={onClose} className="w-full py-2.5 text-sm font-bold font-display tracking-[0.1em]"
-            style={{ background: "var(--vault-gold)", color: "#0c0c0e" }}>
-            DONE
-          </button>
-        )}
+        {/* Error */}
         {stage === "error" && (
-          <button onClick={onClose} className="w-full py-2.5 text-sm font-bold"
-            style={{ border: "1px solid var(--carbon)", color: "var(--gray)" }}>
-            Close
-          </button>
+          <>
+            <p className="text-sm leading-relaxed" style={{ color: "var(--parchment)" }}>{error}</p>
+            <button
+              onClick={onClose}
+              className="w-full py-2.5 text-sm font-bold font-display tracking-[0.1em]"
+              style={{ border: "1px solid var(--carbon)", color: "var(--gray)" }}
+            >
+              DISMISS
+            </button>
+          </>
         )}
       </div>
     </div>
@@ -503,17 +479,17 @@ export function XGoldCard({
   selectedSymbol?: string;
   onSelectSymbol?: (symbol: string) => void;
 } = {}) {
-  const { status, wallet, signer } = useWallet();
+  const { status, wallet } = useWallet();
+  const { send, isSending } = useSendTransaction();
   const { tokenPrices, solUsd, raw, lastUpdated, loading: priceLoading } = usePrices();
   const [internalIdx, setInternalIdx] = useState(0);
   const [tab, setTab]                 = useState<"mint" | "burn">("mint");
   const [amount, setAmount]           = useState("");
 
   // Mint tx state
-  const [mintStage,   setMintStage]   = useState<MintStage>("idle");
-  const [txSig,       setTxSig]       = useState("");
-  const [txError,     setTxError]     = useState("");
-  const [isDevnetSim, setIsDevnetSim] = useState(false);
+  const [mintStage,       setMintStage]       = useState<MintStage>("idle");
+  const [txSig,           setTxSig]           = useState("");
+  const [txError,         setTxError]         = useState("");
   const [showMintReceipt, setShowMintReceipt] = useState(false);
 
   // Burn flow state
@@ -566,58 +542,85 @@ export function XGoldCard({
 
   // ── Mint handler ─────────────────────────────────────────────────────────
   const handleMint = useCallback(async () => {
-    if (!signer || solInputFloat <= 0) return;
-    setShowMintReceipt(true);
-    setTxSig(""); setTxError(""); setIsDevnetSim(false);
+    if (status !== "connected" || !wallet || solInputFloat <= 0) return;
+    setTxSig(""); setTxError(""); setMintStage("building");
 
-    if (jupQuote && !noRoute) {
-      try {
-        setMintStage("fetching");
-        const address  = wallet?.account.address ?? "";
-        const txBase64 = await fetchJupiterSwapTx(jupQuote.raw, address as string);
-        setMintStage("signing");
-        const txBytes    = Buffer.from(txBase64, "base64");
-        const signedBytes: Uint8Array = wallet?.signTransaction
-          ? await wallet.signTransaction(txBytes, "solana:devnet")
-          : txBytes;
-        setMintStage("confirming");
-        const rpcRes = await fetch("https://api.devnet.solana.com", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({
-            jsonrpc: "2.0", id: 1,
-            method: "sendTransaction",
-            params: [Buffer.from(signedBytes).toString("base64"), { encoding: "base64", preflightCommitment: "confirmed" }],
-          }),
-        });
-        const rpcJson = await rpcRes.json() as { result?: string; error?: { message: string } };
-        if (rpcJson.error) throw new Error(rpcJson.error.message);
-        setTxSig(rpcJson.result ?? "");
-        setMintStage("done");
-        return;
-      } catch { /* fall through to sim */ }
+    try {
+      const walletAddr    = wallet.account.address;
+      const mintAddr      = address(token.mintAddress);
+      const encoder       = getAddressEncoder();
+      const TOKEN_2022    = address("TokenzQdBNbLqP5VEhdkAS6EPFLC1PHnBqCXEpPxuEb");
+      const ATA_PROGRAM   = address("ATokenGPvbdGVxr1b2hvZbsiqW5xWH25efTNsLJe8bXh");
+      const SYSTEM_PROG   = address("11111111111111111111111111111111");
+
+      // Derive associated token account
+      const [ataAddr] = await getProgramDerivedAddress({
+        programAddress: ATA_PROGRAM,
+        seeds: [
+          encoder.encode(walletAddr),
+          encoder.encode(TOKEN_2022),
+          encoder.encode(mintAddr),
+        ],
+      });
+
+      // Token amount (Jupiter quote preferred, Pyth fallback)
+      const tokenAmt  = jupTokenOut !== null ? jupTokenOut : pythTokenOut;
+      const amountU64 = BigInt(Math.round(tokenAmt * Math.pow(10, token.decimals)));
+
+      // MintTo instruction data: discriminator 7 + u64 LE
+      const mintData = new Uint8Array(9);
+      mintData[0] = 7;
+      new DataView(mintData.buffer).setBigUint64(1, amountU64, true);
+
+      const txInstructions: Instruction[] = [
+        // CreateAssociatedTokenAccountIdempotent
+        {
+          programAddress: ATA_PROGRAM,
+          accounts: [
+            { address: walletAddr, role: AccountRole.WRITABLE_SIGNER },
+            { address: ataAddr,    role: AccountRole.WRITABLE },
+            { address: walletAddr, role: AccountRole.READONLY },
+            { address: mintAddr,   role: AccountRole.READONLY },
+            { address: SYSTEM_PROG, role: AccountRole.READONLY },
+            { address: TOKEN_2022,  role: AccountRole.READONLY },
+          ],
+          data: new Uint8Array([1]), // CreateIdempotent
+        },
+        // MintTo (Token-2022)
+        {
+          programAddress: TOKEN_2022,
+          accounts: [
+            { address: mintAddr,   role: AccountRole.WRITABLE },
+            { address: ataAddr,    role: AccountRole.WRITABLE },
+            { address: walletAddr, role: AccountRole.READONLY_SIGNER },
+          ],
+          data: mintData,
+        },
+      ];
+
+      setMintStage("signing");
+      const sig = await send({ instructions: txInstructions });
+      setTxSig(String(sig));
+      setMintStage("done");
+    } catch (err) {
+      setTxError(
+        err instanceof Error ? err.message.split("\n")[0].slice(0, 120) : "Transaction failed"
+      );
+      setMintStage("error");
     }
 
-    // Devnet simulation fallback
-    setIsDevnetSim(true);
-    setMintStage("signing");
-    await new Promise((r) => setTimeout(r, 800));
-    setMintStage("confirming");
-    await new Promise((r) => setTimeout(r, 1200));
-    const simSig = Array.from(crypto.getRandomValues(new Uint8Array(32)))
-      .map((b) => b.toString(16).padStart(2, "0")).join("").slice(0, 87) + "A";
-    setTxSig(simSig);
-    setMintStage("simulated");
-  }, [signer, solInputFloat, jupQuote, noRoute, wallet]);
+    // Modal only appears after final resolution
+    setShowMintReceipt(true);
+  }, [status, wallet, solInputFloat, token, send, pythTokenOut, jupTokenOut]);
 
-  const closeMintReceipt = () => {
+  const closeMintReceipt = useCallback(() => {
     setShowMintReceipt(false);
+    if (mintStage === "done") setAmount("");
     setMintStage("idle");
     setTxSig(""); setTxError("");
-    if (mintStage === "done" || mintStage === "simulated") setAmount("");
-  };
+  }, [mintStage]);
 
-  const isExecuting = mintStage !== "idle" && mintStage !== "done" && mintStage !== "simulated" && mintStage !== "error";
+  const isExecuting = isSending || mintStage === "building" || mintStage === "signing";
 
   return (
     <>
@@ -826,16 +829,15 @@ export function XGoldCard({
         )}
       </section>
 
-      {/* Mint receipt overlay */}
-      {showMintReceipt && (
-        <MintReceipt
+      {/* Mint confirmation modal — only shown after done / error */}
+      {showMintReceipt && (mintStage === "done" || mintStage === "error") && (
+        <MintModal
           stage={mintStage}
           sig={txSig}
           tokenSymbol={token.symbol}
           tokenAmount={solInputFloat > 0 ? tokenOut : ""}
           solAmount={solInputFloat > 0 ? solInputFloat.toFixed(4) : ""}
           error={txError}
-          isDevnetSim={isDevnetSim}
           onClose={closeMintReceipt}
         />
       )}
