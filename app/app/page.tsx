@@ -76,7 +76,7 @@ export default function PitchPage() {
               {[
                 { label: "SPL Token 2022", href: "https://spl.solana.com/token-2022" },
                 { label: "Light Protocol", href: "https://lightprotocol.com" },
-                { label: "AGX Reserve",    href: "https://agxlive.com" },
+                { label: "AGX Reserve",    href: "https://upma.org" },
               ].map(({ label, href }) => (
                 <a
                   key={label}
