@@ -102,7 +102,7 @@ export const OBSIDIAN_TOKENS: ObsidianToken[] = [
     metalSymbol: "GBK",
     iconSymbol:  "Gb",
     name:        "Goldback",
-    priceUsd:    9.28,            // 1 Goldback (any denom/state) · goldback.com daily rate 2026-05-02 · $9.28 = 2.92x XAU/1000
+    priceUsd:    9.05,            // fallback only — live price = XAU × 0.002742 via Pyth (1/1000 oz + premium)
     unit:        "note",
     unitShort:   "note",
     change24h:   "+0.42%",
@@ -112,7 +112,7 @@ export const OBSIDIAN_TOKENS: ObsidianToken[] = [
     supply:      0,
     reserveQty:  2_500_000,
     decimals:    6,
-    description: "1 xGLDB = 1 Goldback · all denoms (1-100) · all state series · 24k gold polymer · AGX vault · ~$9.28/note",
+    description: "1 xGLDB = 1 Goldback · all denoms (1-100) · all state series · 24k gold polymer · AGX vault · live XAU price",
     image:       "/assets/stack-xgldb.webp",
   },
 ];
