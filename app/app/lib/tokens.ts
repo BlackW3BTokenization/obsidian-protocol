@@ -35,7 +35,7 @@ export const OBSIDIAN_TOKENS: ObsidianToken[] = [
     unitShort:   "oz",
     change24h:   "+0.42%",
     color:       "#C8960C",   // gold
-    mintAddress: "GLD5k8aBKBJT5nuNaFNKNMTpYMML87WJ5fGxN7M6Pnw2",
+    mintAddress: "AYZNwPNB88ZgcY9fbmNXgM2GMS953Ng6jhYh2BAPvHf1",
     programId:   "oBSDnGLD111111111111111111111111111111111111",
     supply:      0,
     reserveQty:  10_000,
@@ -53,7 +53,7 @@ export const OBSIDIAN_TOKENS: ObsidianToken[] = [
     unitShort:   "oz",
     change24h:   "-0.18%",
     color:       "#94A3B8",   // silver
-    mintAddress: "SLVRqWf9Gj6d8XnP3K5mHeLXwFdqNV7AkCTBhMjYu2x",
+    mintAddress: "4Yp1aTrjLahhbRunjJeGoLqxYdENJzwbcKceE2XQbPaK",
     programId:   "oBSDnSLV111111111111111111111111111111111111",
     supply:      0,
     reserveQty:  500_000,
@@ -71,7 +71,7 @@ export const OBSIDIAN_TOKENS: ObsidianToken[] = [
     unitShort:   "coin",
     change24h:   "+0.42%",
     color:       "#D4A030",   // gold coin - lighter gold
-    mintAddress: "GLDDxNf2MjK8aP9rLv3HqC5TYeZBnVkRsWp4ExoAu1m",
+    mintAddress: "EdQLNmyz5hSt9EDeX4w3UqnkMkxxrqdenor7ADzdC6Jp",
     programId:   "oBSDnGLDD11111111111111111111111111111111111",
     supply:      0,
     reserveQty:  60_000,
@@ -89,7 +89,7 @@ export const OBSIDIAN_TOKENS: ObsidianToken[] = [
     unitShort:   "coin",
     change24h:   "-0.18%",
     color:       "#7D9DB5",   // silver dollar - steel blue-silver
-    mintAddress: "SLVDaP4kL9bM2vJw7QnYdR6TpUfC5HeBxK3ZoVr1Ng",
+    mintAddress: "3MtD1N9yKKzEGy2fsAWD9tYkrKTUH4fezVrqEPqZp9Mf",
     programId:   "oBSDnSLVD11111111111111111111111111111111111",
     supply:      0,
     reserveQty:  300_000,
@@ -107,7 +107,7 @@ export const OBSIDIAN_TOKENS: ObsidianToken[] = [
     unitShort:   "note",
     change24h:   "+0.42%",
     color:       "#A87C08",   // goldback - deep antique gold
-    mintAddress: "GLDB7mFnRt5PqZ2KLyXbC8HdVs9EoAjW3NuBxRvYc6p",
+    mintAddress: "7jDbY2B2q4h99eiXxHUvbE2zfpENzDVCNZ7fyBeLQcU6",
     programId:   "oBSDnGLDB11111111111111111111111111111111111",
     supply:      0,
     reserveQty:  2_500_000,
