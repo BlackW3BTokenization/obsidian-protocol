@@ -1,4 +1,4 @@
-/**
+﻿/**
  * Proxy route: GET /api/agx/branches
  * Forwards to AGX API server-side to avoid CORS.
  * Falls back to mock data if AGX is unreachable.
@@ -32,7 +32,7 @@ export async function GET() {
     const data = await res.json();
     return NextResponse.json({ source: "live", data });
   } catch {
-    // Silently fall back to mock data — keeps demo clean
+    // Silently fall back to mock data - keeps demo clean
     return NextResponse.json({ source: "mock", data: MOCK_BRANCHES });
   }
 }

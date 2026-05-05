@@ -41,7 +41,7 @@ export default function ReservesPage() {
     .join(" ");
 
   return (
-    <div className="mx-auto max-w-6xl px-6 py-10 md:py-14 space-y-6">
+    <div className="mx-auto max-w-6xl px-4 sm:px-6 py-6 md:py-14 space-y-6">
       {/* Page header */}
       <header className="relative mb-2">
         <span className="kanji-watermark text-[140px] -top-6 -left-2" aria-hidden="true">𓂀𓅓</span>
@@ -234,7 +234,7 @@ export default function ReservesPage() {
           <span aria-hidden="true" className="absolute" style={{ width: 18, height: 18, bottom: -1, right: -1, borderBottom: "1.5px solid var(--vault-gold)", borderRight: "1.5px solid var(--vault-gold)", zIndex: 3 }} />
           <img
             src="/assets/stack-xgldb.webp"
-            alt="Florida Goldback notes · physical redemption stack"
+            alt="Goldback notes · all denominations · all state series · physical redemption stack"
             className="w-full h-full object-cover"
             style={{ filter: "saturate(1.1) contrast(1.05)" }}
           />
@@ -257,7 +257,7 @@ export default function ReservesPage() {
               zIndex: 2,
             }}
           >
-            xGLDB · GBK · 1/1000 oz
+            xGLDB · all denoms · all states · 24k
           </span>
         </div>
 
@@ -288,9 +288,11 @@ export default function ReservesPage() {
           </h2>
           <p className="text-sm mt-3 leading-relaxed relative" style={{ color: "var(--parchment)" }}>
             Every Obsidian token is one-for-one redeemable for the underlying physical
-            asset. Burn xGLDB on-chain and the equivalent stack of Goldbacks ships
-            from AGX&apos;s Florida UPMA vault. Bullion bars (xGOLD / xSLVR) and
-            dollar coins (xGLDD / xSLVD) follow the same flow.
+            asset. Burn xGLDB on-chain and Goldback notes ship from AGX&apos;s UPMA
+            vault - all denominations (1/4 through 100) and all state series. Each
+            note contains 24k gold atomized into polymer with UV security and unique
+            serial numbers. Bullion bars (xGOLD / xSLVR) and dollar coins
+            (xGLDD / xSLVD) follow the same flow.
           </p>
           <div className="mt-6 grid grid-cols-3 gap-px relative" style={{ background: "var(--carbon)" }}>
             {[

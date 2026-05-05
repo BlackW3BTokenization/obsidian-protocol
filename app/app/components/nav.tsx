@@ -5,16 +5,16 @@ import { usePathname } from "next/navigation";
 import { useEffect, useState } from "react";
 import { ClusterSelect } from "./cluster-select";
 import { WalletButton } from "./wallet-button";
+import { FintechIcon, type FintechIconName } from "./fintech-icon";
+import { usePrices } from "../lib/price-context";
 import { WaitlistModal } from "./waitlist-modal";
 
-const MOCK_GOLD_PRICE = 3178.5;
-
 const ROUTES = [
-  { href: "/",           label: "BLKW3B",     kanji: "𓂀" },
-  { href: "/protocol",   label: "PROTOCOL",   kanji: "𓂋" },
-  { href: "/reserves",   label: "RESERVES",   kanji: "𓇳" },
-  { href: "/revenue",    label: "REVENUE",    kanji: "𓏥" },
-  { href: "/developers", label: "DEVELOPERS", kanji: "𓈖" },
+  { href: "/",           label: "BLKW3B",   kanji: "𓂀", icon: "dollar_shield"   as FintechIconName },
+  { href: "/protocol",   label: "PROTOCOL", kanji: "𓂋", icon: "laptop_trading"  as FintechIconName },
+  { href: "/reserves",   label: "RESERVES", kanji: "𓇳", icon: "safe"            as FintechIconName },
+  { href: "/revenue",    label: "REVENUE",  kanji: "𓏥", icon: "bar_chart"       as FintechIconName },
+  { href: "/developers", label: "DEV",      kanji: "𓈖", icon: "laptop_security" as FintechIconName },
 ] as const;
 
 function ObsidianLogo() {
@@ -37,7 +37,9 @@ function ObsidianLogo() {
 
 export function Nav() {
   const pathname = usePathname();
-  const [open, setOpen] = useState(false);
+  const { raw, loading: priceLoading } = usePrices();
+  const xauUsd = raw.XAU?.usd ?? 0;
+  const xauChange = raw.XAU?.change24h ?? "";
   const [waitlistOpen, setWaitlistOpen] = useState(false);
 
   useEffect(() => {
@@ -53,34 +55,115 @@ export function Nav() {
   const isActive = (href: string) =>
     href === "/" ? pathname === "/" : pathname?.startsWith(href);
 
+  const priceLabel = priceLoading || xauUsd === 0
+    ? "XAU …"
+    : `XAU $${xauUsd.toLocaleString("en-US", { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
+
   return (
     <>
-    <header
-      className="sticky top-0 z-40 border-b backdrop-blur"
-      style={{
-        background: "rgba(8,8,8,0.85)",
-        borderColor: "var(--carbon)",
-      }}
-    >
-      <div className="mx-auto flex max-w-6xl items-center justify-between px-6 py-4 gap-4">
-        {/* Logo */}
-        <Link href="/" className="flex items-center gap-3 shrink-0 group">
-          <ObsidianLogo />
-          <div className="font-display leading-none">
-            <div
-              className="text-base font-black tracking-[0.25em] transition-[text-shadow]"
-              style={{ color: "var(--gold)", textShadow: "0 0 30px var(--gold-glow)" }}
-            >
-              BLKW3B
+      {/* ── Top header (all breakpoints) ─────────────────────── */}
+      <header
+        className="sticky top-0 z-40 border-b backdrop-blur"
+        style={{
+          background: "rgba(8,8,8,0.92)",
+          borderColor: "var(--carbon)",
+          paddingTop: "env(safe-area-inset-top, 0px)",
+        }}
+      >
+        <div className="mx-auto flex max-w-6xl items-center justify-between px-4 sm:px-6 py-3 gap-3">
+          {/* Logo */}
+          <Link href="/" className="flex items-center gap-2.5 shrink-0 group">
+            <ObsidianLogo />
+            <div className="font-display leading-none">
+              <div
+                className="text-sm font-black tracking-[0.25em] transition-[text-shadow]"
+                style={{ color: "var(--gold)", textShadow: "0 0 30px var(--gold-glow)" }}
+              >
+                BLKW3B
+              </div>
+              <div className="text-[8px] font-bold tracking-[0.3em] mt-0.5 hidden sm:block" style={{ color: "var(--gray)" }}>
+                OBSIDIAN PROTOCOL
+              </div>
             </div>
-            <div className="text-[9px] font-bold tracking-[0.3em] mt-1" style={{ color: "var(--gray)" }}>
-              OBSIDIAN PROTOCOL
-            </div>
-          </div>
-        </Link>
+          </Link>
 
-        {/* Desktop routes */}
-        <nav aria-label="Primary" className="hidden lg:flex items-center gap-0.5 xl:gap-1">
+          {/* Desktop routes */}
+          <nav aria-label="Primary" className="hidden lg:flex items-center gap-0.5 xl:gap-1">
+            {ROUTES.map((r) => {
+              const active = isActive(r.href);
+              return (
+                <Link
+                  key={r.href}
+                  href={r.href}
+                  aria-current={active ? "page" : undefined}
+                  className="font-display relative px-2 xl:px-3 py-2 text-[10px] font-black tracking-[0.25em] transition-colors focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 whitespace-nowrap"
+                  style={{
+                    color: active ? "var(--gold-light)" : "var(--gray)",
+                    outlineColor: "var(--vault-gold)",
+                  }}
+                >
+                  <span className="font-jp mr-1.5 opacity-50" aria-hidden="true">{r.kanji}</span>
+                  {r.label}
+                  {active && (
+                    <span
+                      className="absolute left-2 right-2 -bottom-px h-px"
+                      style={{ background: "var(--vault-gold)" }}
+                      aria-hidden="true"
+                    />
+                  )}
+                </Link>
+              );
+            })}
+          </nav>
+
+          {/* Right cluster */}
+          <div className="flex items-center gap-2 shrink-0">
+            {/* Live XAU price chip */}
+            <div
+              className="hidden xl:flex items-center gap-2 px-2.5 py-1.5 text-[10px] font-medium font-display tracking-[0.1em] whitespace-nowrap"
+              style={{ background: "var(--gold-muted)", border: "1px solid var(--gold-border)", color: "var(--gold)" }}
+            >
+              <span className="relative flex h-1.5 w-1.5">
+                <span className="animate-ping absolute inline-flex h-full w-full rounded-full opacity-75" style={{ background: "var(--vault-gold)" }} />
+                <span className="relative inline-flex rounded-full h-1.5 w-1.5" style={{ background: "var(--vault-gold)" }} />
+              </span>
+              {priceLabel}
+              {xauChange && (
+                <span
+                  className="text-[9px] font-mono"
+                  style={{ color: xauChange.startsWith("+") ? "var(--mint-green)" : "var(--burn-red)" }}
+                >
+                  {xauChange}
+                </span>
+              )}
+            </div>
+            <button
+              type="button"
+              onClick={() => setWaitlistOpen(true)}
+              className="font-display chamfer hidden sm:inline-flex items-center px-3 py-1.5 font-black uppercase tracking-[0.2em] cursor-pointer transition-all active:scale-[0.98] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 whitespace-nowrap"
+              style={{
+                background: "var(--vault-gold)",
+                color: "var(--obsidian)",
+                fontSize: 10,
+                boxShadow: "0 0 16px var(--gold-glow)",
+                outlineColor: "var(--vault-gold)",
+              }}
+              onMouseEnter={(e) => { e.currentTarget.style.background = "var(--gold-light)"; }}
+              onMouseLeave={(e) => { e.currentTarget.style.background = "var(--vault-gold)"; }}
+            >
+              Join Waitlist
+            </button>
+            <div className="hidden md:block">
+              <ClusterSelect />
+            </div>
+            <WalletButton />
+          </div>
+        </div>
+      </header>
+
+      {/* ── Mobile bottom tab bar ─────────────────────────────── */}
+      <nav aria-label="Primary mobile" className="bottom-nav lg:hidden">
+        <div className="grid grid-cols-5 h-14">
           {ROUTES.map((r) => {
             const active = isActive(r.href);
             return (
@@ -88,128 +171,32 @@ export function Nav() {
                 key={r.href}
                 href={r.href}
                 aria-current={active ? "page" : undefined}
-                className="font-display relative px-2 xl:px-3 py-2 text-[10px] font-black tracking-[0.25em] transition-colors focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 whitespace-nowrap"
-                style={{
-                  color: active ? "var(--gold-light)" : "var(--gray)",
-                  outlineColor: "var(--vault-gold)",
-                }}
+                className="flex flex-col items-center justify-center gap-0.5 py-2 relative transition-opacity focus-visible:outline-none active:opacity-70"
+                style={{ color: active ? "var(--gold-light)" : "var(--gray)" }}
               >
-                <span className="font-jp mr-1.5 opacity-50" aria-hidden="true">{r.kanji}</span>
-                {r.label}
                 {active && (
                   <span
-                    className="absolute left-2 right-2 -bottom-px h-px"
+                    className="absolute top-0 left-3 right-3 h-px"
                     style={{ background: "var(--vault-gold)" }}
                     aria-hidden="true"
                   />
                 )}
+                <span style={{ opacity: active ? 1 : 0.45, transition: "opacity 0.15s" }}>
+                  <FintechIcon name={r.icon} size={22} glow={active} />
+                </span>
+                <span
+                  className="font-display font-black tracking-[0.15em]"
+                  style={{ fontSize: 7, color: active ? "var(--gold)" : "var(--gray)" }}
+                >
+                  {r.label}
+                </span>
               </Link>
             );
           })}
-        </nav>
-
-        {/* Right cluster: price chip + waitlist + cluster + wallet */}
-        <div className="flex items-center gap-2 shrink-0 min-w-0">
-          <div
-            className="hidden xl:flex items-center gap-2 px-2.5 py-1.5 text-[11px] font-medium font-display tracking-[0.1em] whitespace-nowrap"
-            style={{ background: "var(--gold-muted)", border: "1px solid var(--gold-border)", color: "var(--gold)" }}
-          >
-            <span className="relative flex h-1.5 w-1.5">
-              <span className="animate-ping absolute inline-flex h-full w-full rounded-full opacity-75" style={{ background: "var(--vault-gold)" }} />
-              <span className="relative inline-flex rounded-full h-1.5 w-1.5" style={{ background: "var(--vault-gold)" }} />
-            </span>
-            XAU ${MOCK_GOLD_PRICE.toLocaleString()}
-          </div>
-          <button
-            type="button"
-            onClick={() => setWaitlistOpen(true)}
-            className="font-display chamfer hidden sm:inline-flex items-center px-3 py-1.5 font-black uppercase tracking-[0.2em] cursor-pointer transition-all active:scale-[0.98] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 whitespace-nowrap"
-            style={{
-              background: "var(--vault-gold)",
-              color: "var(--obsidian)",
-              fontSize: 10,
-              boxShadow: "0 0 16px var(--gold-glow)",
-              outlineColor: "var(--vault-gold)",
-            }}
-            onMouseEnter={(e) => { e.currentTarget.style.background = "var(--gold-light)"; }}
-            onMouseLeave={(e) => { e.currentTarget.style.background = "var(--vault-gold)"; }}
-          >
-            Join Waitlist
-          </button>
-          <div className="hidden md:block">
-            <ClusterSelect />
-          </div>
-          <WalletButton />
-          <button
-            type="button"
-            aria-label={open ? "Close menu" : "Open menu"}
-            aria-expanded={open}
-            onClick={() => setOpen((v) => !v)}
-            className="lg:hidden flex h-10 w-10 items-center justify-center border focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2"
-            style={{ borderColor: "var(--carbon)", color: "var(--gold)", outlineColor: "var(--vault-gold)" }}
-          >
-            <svg width="18" height="18" viewBox="0 0 18 18" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" aria-hidden="true">
-              {open ? (
-                <><path d="M4 4l10 10" /><path d="M14 4L4 14" /></>
-              ) : (
-                <><path d="M3 5h12" /><path d="M3 9h12" /><path d="M3 13h12" /></>
-              )}
-            </svg>
-          </button>
         </div>
-      </div>
+      </nav>
 
-      {/* Mobile drawer */}
-      {open && (
-        <nav
-          aria-label="Primary mobile"
-          className="lg:hidden border-t"
-          style={{ background: "var(--obsidian)", borderColor: "var(--carbon)" }}
-        >
-          <ul className="mx-auto max-w-6xl px-6 py-3 grid gap-1">
-            <li>
-              <button
-                type="button"
-                onClick={() => {
-                  setOpen(false);
-                  setWaitlistOpen(true);
-                }}
-                className="font-display chamfer w-full px-4 py-3 text-left font-black uppercase tracking-[0.25em] cursor-pointer"
-                style={{
-                  background: "var(--vault-gold)",
-                  color: "var(--obsidian)",
-                  fontSize: 11,
-                }}
-              >
-                Join Waitlist
-              </button>
-            </li>
-            {ROUTES.map((r) => {
-              const active = isActive(r.href);
-              return (
-                <li key={r.href}>
-                  <Link
-                    href={r.href}
-                    onClick={() => setOpen(false)}
-                    aria-current={active ? "page" : undefined}
-                    className="font-display flex items-center gap-3 px-3 py-3 text-xs font-black tracking-[0.25em]"
-                    style={{
-                      background: active ? "var(--gold-muted)" : "transparent",
-                      color: active ? "var(--gold-light)" : "var(--gray)",
-                      borderLeft: `2px solid ${active ? "var(--vault-gold)" : "transparent"}`,
-                    }}
-                  >
-                    <span className="font-jp opacity-60" aria-hidden="true">{r.kanji}</span>
-                    {r.label}
-                  </Link>
-                </li>
-              );
-            })}
-          </ul>
-        </nav>
-      )}
-    </header>
-    <WaitlistModal isOpen={waitlistOpen} onClose={() => setWaitlistOpen(false)} />
+      <WaitlistModal isOpen={waitlistOpen} onClose={() => setWaitlistOpen(false)} />
     </>
   );
 }

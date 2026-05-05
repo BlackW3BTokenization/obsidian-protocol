@@ -1,4 +1,4 @@
-/**
+﻿/**
  * GET /api/reserve/attestation
  *
  * x402-gated endpoint. Returns live AGX reserve data + ZK proof hash.
@@ -11,7 +11,7 @@
 
 import { withX402Gate } from "../../../lib/x402";
 
-// Mock reserve data — replace with real AGX API call once authenticated
+// Mock reserve data - replace with real AGX API call once authenticated
 const RESERVE_DATA = {
   timestamp:        new Date().toISOString(),
   protocol:         "Obsidian Protocol",

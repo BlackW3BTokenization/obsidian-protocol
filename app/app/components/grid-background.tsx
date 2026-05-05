@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 
 export function GridBackground() {
   return (
@@ -14,7 +14,7 @@ export function GridBackground() {
         }}
       />
 
-      {/* Large grid — purple (left) */}
+      {/* Large grid - purple (left) */}
       <div
         className="absolute inset-0 opacity-80 dark:opacity-60"
         style={{
@@ -29,7 +29,7 @@ export function GridBackground() {
         }}
       />
 
-      {/* Large grid — green (right) */}
+      {/* Large grid - green (right) */}
       <div
         className="absolute inset-0 opacity-80 dark:opacity-60"
         style={{
@@ -44,7 +44,7 @@ export function GridBackground() {
         }}
       />
 
-      {/* Small grid — purple (left) */}
+      {/* Small grid - purple (left) */}
       <div
         className="absolute inset-0 opacity-80 dark:opacity-60"
         style={{
@@ -59,7 +59,7 @@ export function GridBackground() {
         }}
       />
 
-      {/* Small grid — green (right) */}
+      {/* Small grid - green (right) */}
       <div
         className="absolute inset-0 opacity-80 dark:opacity-60"
         style={{

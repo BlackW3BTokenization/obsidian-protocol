@@ -7,7 +7,7 @@ const COLS = [
   {
     label: "PROTOCOL",
     items: [
-      { label: "BLKW3B",      href: "/",           icon: "medal"            as FintechIconName },
+      { label: "BLKW3B",      href: "/",           icon: "dollar_shield"    as FintechIconName },
       { label: "Live dApp",   href: "/protocol",   icon: "laptop_trading"   as FintechIconName },
       { label: "Reserves",    href: "/reserves",   icon: "safe"             as FintechIconName },
       { label: "Revenue",     href: "/revenue",    icon: "bar_chart"        as FintechIconName },
@@ -19,7 +19,7 @@ const COLS = [
     items: [
       { label: "SPL Token 2022", href: "https://spl.solana.com/token-2022", external: true, icon: "dollar_contract" as FintechIconName },
       { label: "Light Protocol", href: "https://lightprotocol.com",           external: true, icon: "lock"           as FintechIconName },
-      { label: "AGX / UPMA",     href: "https://agxlive.com",                 external: true, icon: "safe_open_coins" as FintechIconName },
+      { label: "AGX / UPMA",     href: "https://upma.org",                    external: true, icon: "safe_open_coins" as FintechIconName },
       { label: "Pyth Network",   href: "https://pyth.network",                external: true, icon: "candles"        as FintechIconName },
     ],
   },

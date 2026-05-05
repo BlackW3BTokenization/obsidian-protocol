@@ -1,14 +1,14 @@
-import type { Metadata } from "next";
-import { Chakra_Petch, Space_Grotesk } from "next/font/google";
+import type { Metadata, Viewport } from "next";
+import { Bebas_Neue, Space_Grotesk } from "next/font/google";
 import "./globals.css";
 import { Providers } from "./components/providers";
 import { Nav } from "./components/nav";
 import { Footer } from "./components/footer";
 
-const chakraPetch = Chakra_Petch({
-  variable: "--font-chakra",
+const bebasNeue = Bebas_Neue({
+  variable: "--font-bebas",
   subsets: ["latin"],
-  weight: ["300", "400", "500", "600", "700"],
+  weight: "400",
   display: "swap",
 });
 
@@ -22,12 +22,49 @@ const spaceGrotesk = Space_Grotesk({
 export const metadata: Metadata = {
   title: "BLKW3B // Obsidian Protocol",
   description:
-    "Tokenized gold and silver on Solana. xGOLD · xSLVR · xGLDD · xSLVD · xGLDB · backed 1:1 by AGX vault reserves.",
+    "Tokenized precious metals on Solana. xGOLD · xSLVR · xGLDD · xSLVD · xGLDB · backed 1:1 by AGX vault reserves. Mint, hold, send, or burn to redeem physical metal.",
   icons: {
     icon: "/icon.svg",
     shortcut: "/icon.svg",
-    apple: "/icon.svg",
+    apple: "/assets/blkw3b-crest.webp",
   },
+  manifest: "/manifest.json",
+  appleWebApp: {
+    capable: true,
+    statusBarStyle: "black-translucent",
+    title: "Obsidian",
+  },
+  openGraph: {
+    title: "BLKW3B // Obsidian Protocol",
+    description:
+      "Tokenized precious metals on Solana. xGOLD · xSLVR · xGLDD · xSLVD · xGLDB · backed 1:1 by AGX vault reserves. Mint, hold, send, or burn to redeem physical metal.",
+    url: "https://w3bs.fun",
+    siteName: "Obsidian Protocol",
+    images: [
+      {
+        url: "https://w3bs.fun/assets/pyramid-xgold.jpg",
+        width: 1200,
+        height: 630,
+        alt: "BLKW3B Obsidian Protocol · Tokenized Precious Metals on Solana",
+      },
+    ],
+    type: "website",
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "BLKW3B // Obsidian Protocol",
+    description:
+      "Tokenized precious metals on Solana. xGOLD · xSLVR · xGLDD · xSLVD · xGLDB · backed 1:1 by AGX vault reserves.",
+    images: ["https://w3bs.fun/assets/pyramid-xgold.jpg"],
+  },
+};
+
+export const viewport: Viewport = {
+  width: "device-width",
+  initialScale: 1,
+  minimumScale: 1,
+  viewportFit: "cover",
+  themeColor: "#080808",
 };
 
 export default function RootLayout({
@@ -45,7 +82,7 @@ export default function RootLayout({
           rel="stylesheet"
         />
       </head>
-      <body className={`${chakraPetch.variable} ${spaceGrotesk.variable} antialiased`}>
+      <body className={`${bebasNeue.variable} ${spaceGrotesk.variable} antialiased`}>
         <Providers>
           <div
             className="relative min-h-screen flex flex-col"
@@ -75,8 +112,13 @@ export default function RootLayout({
 
             <div className="relative z-10 flex flex-col min-h-screen">
               <Nav />
-              <main className="flex-1">{children}</main>
-              <Footer />
+              {/* pb accounts for bottom tab bar on mobile + safe area */}
+              <main className="flex-1 pb-[calc(72px+env(safe-area-inset-bottom,0px))] lg:pb-0">
+                {children}
+              </main>
+              <div className="hidden lg:block">
+                <Footer />
+              </div>
             </div>
           </div>
         </Providers>

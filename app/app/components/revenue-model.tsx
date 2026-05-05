@@ -1,6 +1,8 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
+
+const TIER_STORAGE_KEY = "obsidian:revenue-tier";
 
 // ── Fee Structure ──────────────────────────────────────────────────────────
 export const FEES = {
@@ -125,6 +127,23 @@ function TierCard({
 
 export function RevenueModel() {
   const [selectedTier, setSelectedTier] = useState(1); // Year 1 default
+
+  // Persist tier selection across sessions
+  useEffect(() => {
+    try {
+      const saved = localStorage.getItem(TIER_STORAGE_KEY);
+      if (saved !== null) {
+        const idx = parseInt(saved, 10);
+        if (idx >= 0 && idx < TIERS.length) setSelectedTier(idx);
+      }
+    } catch { /* localStorage unavailable */ }
+  }, []);
+
+  const handleSelectTier = (i: number) => {
+    setSelectedTier(i);
+    try { localStorage.setItem(TIER_STORAGE_KEY, String(i)); } catch { /* ignore */ }
+  };
+
   const tier = TIERS[selectedTier];
   const r = revenue(tier.accounts, tier.annualVelocity);
 
@@ -193,7 +212,7 @@ export function RevenueModel() {
           </p>
           <div className="grid grid-cols-2 gap-2">
             {TIERS.map((t, i) => (
-              <TierCard key={t.label} tier={t} selected={i === selectedTier} onClick={() => setSelectedTier(i)} />
+              <TierCard key={t.label} tier={t} selected={i === selectedTier} onClick={() => handleSelectTier(i)} />
             ))}
           </div>
 

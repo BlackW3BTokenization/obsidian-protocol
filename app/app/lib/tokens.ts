@@ -1,4 +1,4 @@
-/**
+﻿/**
  * Obsidian Protocol · 5 Tokenized Precious Metals
  * BLKW3B Inc. · Backed 1:1 by AGX vault holdings
  * Canonical product suite (per Design System v1.0):
@@ -34,8 +34,8 @@ export const OBSIDIAN_TOKENS: ObsidianToken[] = [
     unit:        "troy oz",
     unitShort:   "oz",
     change24h:   "+0.42%",
-    color:       "#C8960C",
-    mintAddress: "GLD5k8aBKBJT5nuNaFNKNMTpYMML87WJ5fGxN7M6Pnw2",
+    color:       "#C8960C",   // gold
+    mintAddress: "AYZNwPNB88ZgcY9fbmNXgM2GMS953Ng6jhYh2BAPvHf1",
     programId:   "oBSDnGLD111111111111111111111111111111111111",
     supply:      0,
     reserveQty:  10_000,
@@ -52,8 +52,8 @@ export const OBSIDIAN_TOKENS: ObsidianToken[] = [
     unit:        "troy oz",
     unitShort:   "oz",
     change24h:   "-0.18%",
-    color:       "#C8960C",
-    mintAddress: "SLVRqWf9Gj6d8XnP3K5mHeLXwFdqNV7AkCTBhMjYu2x",
+    color:       "#94A3B8",   // silver
+    mintAddress: "4Yp1aTrjLahhbRunjJeGoLqxYdENJzwbcKceE2XQbPaK",
     programId:   "oBSDnSLV111111111111111111111111111111111111",
     supply:      0,
     reserveQty:  500_000,
@@ -70,8 +70,8 @@ export const OBSIDIAN_TOKENS: ObsidianToken[] = [
     unit:        "coin",
     unitShort:   "coin",
     change24h:   "+0.42%",
-    color:       "#C8960C",
-    mintAddress: "GLDDxNf2MjK8aP9rLv3HqC5TYeZBnVkRsWp4ExoAu1m",
+    color:       "#D4A030",   // gold coin - lighter gold
+    mintAddress: "EdQLNmyz5hSt9EDeX4w3UqnkMkxxrqdenor7ADzdC6Jp",
     programId:   "oBSDnGLDD11111111111111111111111111111111111",
     supply:      0,
     reserveQty:  60_000,
@@ -88,8 +88,8 @@ export const OBSIDIAN_TOKENS: ObsidianToken[] = [
     unit:        "coin",
     unitShort:   "coin",
     change24h:   "-0.18%",
-    color:       "#C8960C",
-    mintAddress: "SLVDaP4kL9bM2vJw7QnYdR6TpUfC5HeBxK3ZoVr1Ng",
+    color:       "#7D9DB5",   // silver dollar - steel blue-silver
+    mintAddress: "3MtD1N9yKKzEGy2fsAWD9tYkrKTUH4fezVrqEPqZp9Mf",
     programId:   "oBSDnSLVD11111111111111111111111111111111111",
     supply:      0,
     reserveQty:  300_000,
@@ -102,17 +102,17 @@ export const OBSIDIAN_TOKENS: ObsidianToken[] = [
     metalSymbol: "GBK",
     iconSymbol:  "Gb",
     name:        "Goldback",
-    priceUsd:    4.25,            // current 1-Goldback aura-layered note value
+    priceUsd:    9.05,            // fallback only — live price = XAU × 0.002005 via Pyth (calibrated 2026-05-04)
     unit:        "note",
     unitShort:   "note",
     change24h:   "+0.42%",
-    color:       "#C8960C",
-    mintAddress: "GLDB7mFnRt5PqZ2KLyXbC8HdVs9EoAjW3NuBxRvYc6p",
+    color:       "#A87C08",   // goldback - deep antique gold
+    mintAddress: "7jDbY2B2q4h99eiXxHUvbE2zfpENzDVCNZ7fyBeLQcU6",
     programId:   "oBSDnGLDB11111111111111111111111111111111111",
     supply:      0,
     reserveQty:  2_500_000,
     decimals:    6,
-    description: "1 xGLDB = 1 Goldback note (1/1000 oz gold) · AGX vault · SPL Token 2022",
+    description: "1 xGLDB = 1 Goldback · all denoms (1-100) · all state series · 24k gold polymer · AGX vault · live XAU price",
     image:       "/assets/stack-xgldb.webp",
   },
 ];
