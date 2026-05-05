@@ -2,9 +2,10 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { ClusterSelect } from "./cluster-select";
 import { WalletButton } from "./wallet-button";
+import { WaitlistModal } from "./waitlist-modal";
 
 const MOCK_GOLD_PRICE = 3178.5;
 
@@ -37,11 +38,23 @@ function ObsidianLogo() {
 export function Nav() {
   const pathname = usePathname();
   const [open, setOpen] = useState(false);
+  const [waitlistOpen, setWaitlistOpen] = useState(false);
+
+  useEffect(() => {
+    if (typeof window === "undefined") return;
+    if (localStorage.getItem("hasSeenWaitlistModal")) return;
+    const t = setTimeout(() => {
+      setWaitlistOpen(true);
+      localStorage.setItem("hasSeenWaitlistModal", "true");
+    }, 2000);
+    return () => clearTimeout(t);
+  }, []);
 
   const isActive = (href: string) =>
     href === "/" ? pathname === "/" : pathname?.startsWith(href);
 
   return (
+    <>
     <header
       className="sticky top-0 z-40 border-b backdrop-blur"
       style={{
@@ -67,7 +80,7 @@ export function Nav() {
         </Link>
 
         {/* Desktop routes */}
-        <nav aria-label="Primary" className="hidden lg:flex items-center gap-1">
+        <nav aria-label="Primary" className="hidden lg:flex items-center gap-0.5 xl:gap-1">
           {ROUTES.map((r) => {
             const active = isActive(r.href);
             return (
@@ -75,7 +88,7 @@ export function Nav() {
                 key={r.href}
                 href={r.href}
                 aria-current={active ? "page" : undefined}
-                className="font-display relative px-3 py-2 text-[10px] font-black tracking-[0.25em] transition-colors focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2"
+                className="font-display relative px-2 xl:px-3 py-2 text-[10px] font-black tracking-[0.25em] transition-colors focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 whitespace-nowrap"
                 style={{
                   color: active ? "var(--gold-light)" : "var(--gray)",
                   outlineColor: "var(--vault-gold)",
@@ -95,10 +108,10 @@ export function Nav() {
           })}
         </nav>
 
-        {/* Right cluster: price chip + cluster + wallet */}
-        <div className="flex items-center gap-2 shrink-0">
+        {/* Right cluster: price chip + waitlist + cluster + wallet */}
+        <div className="flex items-center gap-2 shrink-0 min-w-0">
           <div
-            className="hidden sm:flex items-center gap-2 px-3 py-1.5 text-xs font-medium font-display tracking-[0.1em]"
+            className="hidden xl:flex items-center gap-2 px-2.5 py-1.5 text-[11px] font-medium font-display tracking-[0.1em] whitespace-nowrap"
             style={{ background: "var(--gold-muted)", border: "1px solid var(--gold-border)", color: "var(--gold)" }}
           >
             <span className="relative flex h-1.5 w-1.5">
@@ -107,7 +120,25 @@ export function Nav() {
             </span>
             XAU ${MOCK_GOLD_PRICE.toLocaleString()}
           </div>
-          <ClusterSelect />
+          <button
+            type="button"
+            onClick={() => setWaitlistOpen(true)}
+            className="font-display chamfer hidden sm:inline-flex items-center px-3 py-1.5 font-black uppercase tracking-[0.2em] cursor-pointer transition-all active:scale-[0.98] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 whitespace-nowrap"
+            style={{
+              background: "var(--vault-gold)",
+              color: "var(--obsidian)",
+              fontSize: 10,
+              boxShadow: "0 0 16px var(--gold-glow)",
+              outlineColor: "var(--vault-gold)",
+            }}
+            onMouseEnter={(e) => { e.currentTarget.style.background = "var(--gold-light)"; }}
+            onMouseLeave={(e) => { e.currentTarget.style.background = "var(--vault-gold)"; }}
+          >
+            Join Waitlist
+          </button>
+          <div className="hidden md:block">
+            <ClusterSelect />
+          </div>
           <WalletButton />
           <button
             type="button"
@@ -136,6 +167,23 @@ export function Nav() {
           style={{ background: "var(--obsidian)", borderColor: "var(--carbon)" }}
         >
           <ul className="mx-auto max-w-6xl px-6 py-3 grid gap-1">
+            <li>
+              <button
+                type="button"
+                onClick={() => {
+                  setOpen(false);
+                  setWaitlistOpen(true);
+                }}
+                className="font-display chamfer w-full px-4 py-3 text-left font-black uppercase tracking-[0.25em] cursor-pointer"
+                style={{
+                  background: "var(--vault-gold)",
+                  color: "var(--obsidian)",
+                  fontSize: 11,
+                }}
+              >
+                Join Waitlist
+              </button>
+            </li>
             {ROUTES.map((r) => {
               const active = isActive(r.href);
               return (
@@ -161,5 +209,7 @@ export function Nav() {
         </nav>
       )}
     </header>
+    <WaitlistModal isOpen={waitlistOpen} onClose={() => setWaitlistOpen(false)} />
+    </>
   );
 }
