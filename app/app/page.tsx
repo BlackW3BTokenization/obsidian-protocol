@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import { ProtocolStats } from "./components/protocol-stats";
+import { BackedBy } from "./components/backed-by";
 import { GoldTopLine, Scanlines } from "./components/primitives";
 import { OBSIDIAN_TOKENS } from "./lib/tokens";
 import { FintechIcon, type FintechIconName } from "./components/fintech-icon";
@@ -249,6 +250,8 @@ export default function PitchPage() {
           </div>
         </div>
       </section>
+
+      <BackedBy />
 
       {/* Phase 1 banner + 60k stats + 5-token grid + adoption bar */}
       <ProtocolStats />

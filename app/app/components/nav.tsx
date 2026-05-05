@@ -2,10 +2,12 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
+import { useEffect, useState } from "react";
 import { ClusterSelect } from "./cluster-select";
 import { WalletButton } from "./wallet-button";
 import { FintechIcon, type FintechIconName } from "./fintech-icon";
 import { usePrices } from "../lib/price-context";
+import { WaitlistModal } from "./waitlist-modal";
 
 const ROUTES = [
   { href: "/",           label: "BLKW3B",   kanji: "𓂀", icon: "dollar_shield"   as FintechIconName },
@@ -38,6 +40,17 @@ export function Nav() {
   const { raw, loading: priceLoading } = usePrices();
   const xauUsd = raw.XAU?.usd ?? 0;
   const xauChange = raw.XAU?.change24h ?? "";
+  const [waitlistOpen, setWaitlistOpen] = useState(false);
+
+  useEffect(() => {
+    if (typeof window === "undefined") return;
+    if (localStorage.getItem("hasSeenWaitlistModal")) return;
+    const t = setTimeout(() => {
+      setWaitlistOpen(true);
+      localStorage.setItem("hasSeenWaitlistModal", "true");
+    }, 2000);
+    return () => clearTimeout(t);
+  }, []);
 
   const isActive = (href: string) =>
     href === "/" ? pathname === "/" : pathname?.startsWith(href);
@@ -75,7 +88,7 @@ export function Nav() {
           </Link>
 
           {/* Desktop routes */}
-          <nav aria-label="Primary" className="hidden lg:flex items-center gap-1">
+          <nav aria-label="Primary" className="hidden lg:flex items-center gap-0.5 xl:gap-1">
             {ROUTES.map((r) => {
               const active = isActive(r.href);
               return (
@@ -83,7 +96,7 @@ export function Nav() {
                   key={r.href}
                   href={r.href}
                   aria-current={active ? "page" : undefined}
-                  className="font-display relative px-3 py-2 text-[10px] font-black tracking-[0.25em] transition-colors focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2"
+                  className="font-display relative px-2 xl:px-3 py-2 text-[10px] font-black tracking-[0.25em] transition-colors focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 whitespace-nowrap"
                   style={{
                     color: active ? "var(--gold-light)" : "var(--gray)",
                     outlineColor: "var(--vault-gold)",
@@ -107,7 +120,7 @@ export function Nav() {
           <div className="flex items-center gap-2 shrink-0">
             {/* Live XAU price chip */}
             <div
-              className="hidden sm:flex items-center gap-2 px-2.5 py-1.5 text-[10px] font-medium font-display tracking-[0.1em]"
+              className="hidden xl:flex items-center gap-2 px-2.5 py-1.5 text-[10px] font-medium font-display tracking-[0.1em] whitespace-nowrap"
               style={{ background: "var(--gold-muted)", border: "1px solid var(--gold-border)", color: "var(--gold)" }}
             >
               <span className="relative flex h-1.5 w-1.5">
@@ -124,7 +137,25 @@ export function Nav() {
                 </span>
               )}
             </div>
-            <ClusterSelect />
+            <button
+              type="button"
+              onClick={() => setWaitlistOpen(true)}
+              className="font-display chamfer hidden sm:inline-flex items-center px-3 py-1.5 font-black uppercase tracking-[0.2em] cursor-pointer transition-all active:scale-[0.98] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 whitespace-nowrap"
+              style={{
+                background: "var(--vault-gold)",
+                color: "var(--obsidian)",
+                fontSize: 10,
+                boxShadow: "0 0 16px var(--gold-glow)",
+                outlineColor: "var(--vault-gold)",
+              }}
+              onMouseEnter={(e) => { e.currentTarget.style.background = "var(--gold-light)"; }}
+              onMouseLeave={(e) => { e.currentTarget.style.background = "var(--vault-gold)"; }}
+            >
+              Join Waitlist
+            </button>
+            <div className="hidden md:block">
+              <ClusterSelect />
+            </div>
             <WalletButton />
           </div>
         </div>
@@ -164,6 +195,8 @@ export function Nav() {
           })}
         </div>
       </nav>
+
+      <WaitlistModal isOpen={waitlistOpen} onClose={() => setWaitlistOpen(false)} />
     </>
   );
 }
