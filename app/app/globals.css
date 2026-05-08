@@ -158,6 +158,9 @@ body::after {
   position: absolute;
   user-select: none;
   letter-spacing: 0.04em;
+  max-width: 100%;
+  overflow: hidden;
+  white-space: nowrap;
 }
 
 /* ── CORNER BRACKETS · BLKW3B signature ────────────────────── */

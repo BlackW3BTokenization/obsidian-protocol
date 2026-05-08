@@ -85,7 +85,7 @@ export default function RootLayout({
       <body className={`${bebasNeue.variable} ${spaceGrotesk.variable} antialiased`}>
         <Providers>
           <div
-            className="relative min-h-screen flex flex-col"
+            className="relative min-h-screen flex flex-col overflow-x-hidden w-full"
             style={{ background: "var(--background)", color: "var(--foreground)" }}
           >
             {/* Global obsidian grid background */}
@@ -110,7 +110,7 @@ export default function RootLayout({
               }}
             />
 
-            <div className="relative z-10 flex flex-col min-h-screen">
+            <div className="relative z-10 flex flex-col min-h-screen overflow-x-hidden w-full">
               <Nav />
               {/* pb accounts for bottom tab bar on mobile + safe area */}
               <main className="flex-1 pb-[calc(72px+env(safe-area-inset-bottom,0px))] lg:pb-0">
