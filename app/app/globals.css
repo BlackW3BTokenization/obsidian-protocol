@@ -222,7 +222,9 @@ body::after {
 
 .animate-marquee {
   animation: marquee 30s linear infinite;
-  will-change: transform;
+  /* will-change: transform intentionally omitted — on iOS Safari, promoting the
+     child to its own compositing layer causes the parent overflow:hidden to stop
+     clipping it, which lets the marquee escape and widen the scroll area */
 }
 
 /* ══════════════════════════════════════════════════════════════
@@ -247,15 +249,16 @@ body::after {
 html {
   scroll-behavior: smooth;
   -webkit-text-size-adjust: 100%;
-  overflow-x: hidden; /* prevent absolute-positioned kanji watermarks from creating horizontal scroll */
-  max-width: 100%;    /* iOS Safari: hard-cap root width so nothing can widen the scroll area */
+  overflow-x: clip;   /* clip (not hidden) — doesn't create a scroll container, just clips visually */
+  max-width: 100%;
 }
 
-/* Prevent pull-to-refresh hijack on Seeker */
+/* Prevent pull-to-refresh + horizontal scroll on touch devices */
 body {
-  overscroll-behavior-y: none;
-  overflow-x: hidden; /* belt-and-suspenders: body clips any child overflow the html rule misses */
-  max-width: 100%;    /* iOS Safari: belt-and-suspenders alongside html rule */
+  overscroll-behavior: none;          /* kill both axes of overscroll */
+  overflow-x: hidden;
+  max-width: 100%;
+  touch-action: pan-y pinch-zoom;     /* iOS/Android: only allow vertical pan + pinch, block horizontal swipe */
 }
 
 /* Momentum scrolling for all overflow containers */
