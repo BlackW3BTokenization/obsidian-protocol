@@ -20,7 +20,12 @@ export function BackedBy() {
       </p>
       <div
         className="overflow-hidden border corner-brackets py-8 relative group"
-        style={{ background: "var(--void)", borderColor: "var(--carbon)" }}
+        style={{
+          background: "var(--void)",
+          borderColor: "var(--carbon)",
+          transform: "translateZ(0)", /* iOS Safari: force GPU layer so overflow-hidden actually clips will-change:transform children */
+          WebkitTransform: "translateZ(0)",
+        }}
       >
         <div
           className="pointer-events-none absolute inset-y-0 left-0 w-24 z-10"

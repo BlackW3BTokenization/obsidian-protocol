@@ -248,12 +248,14 @@ html {
   scroll-behavior: smooth;
   -webkit-text-size-adjust: 100%;
   overflow-x: hidden; /* prevent absolute-positioned kanji watermarks from creating horizontal scroll */
+  max-width: 100%;    /* iOS Safari: hard-cap root width so nothing can widen the scroll area */
 }
 
 /* Prevent pull-to-refresh hijack on Seeker */
 body {
   overscroll-behavior-y: none;
   overflow-x: hidden; /* belt-and-suspenders: body clips any child overflow the html rule misses */
+  max-width: 100%;    /* iOS Safari: belt-and-suspenders alongside html rule */
 }
 
 /* Momentum scrolling for all overflow containers */

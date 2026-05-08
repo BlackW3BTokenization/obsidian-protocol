@@ -113,7 +113,7 @@ export default function RootLayout({
             <div className="relative z-10 flex flex-col min-h-screen overflow-x-hidden w-full">
               <Nav />
               {/* pb accounts for bottom tab bar on mobile + safe area */}
-              <main className="flex-1 pb-[calc(72px+env(safe-area-inset-bottom,0px))] lg:pb-0">
+              <main className="flex-1 overflow-x-hidden pb-[calc(72px+env(safe-area-inset-bottom,0px))] lg:pb-0">
                 {children}
               </main>
               <div className="hidden lg:block">
