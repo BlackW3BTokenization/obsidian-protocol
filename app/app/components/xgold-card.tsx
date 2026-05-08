@@ -7,6 +7,7 @@ import { FEES } from "./revenue-model";
 import { FintechIcon, type FintechIconName } from "./fintech-icon";
 import { usePrices } from "../lib/price-context";
 import { useJupiterQuote } from "../lib/hooks/use-jupiter-quote";
+import { useTokenBalances } from "../lib/hooks/use-token-balances";
 import type { RedemptionRecord } from "../api/redemptions/route";
 
 // Per-token icon mapping
@@ -476,6 +477,10 @@ export function XGoldCard({
 } = {}) {
   const { status, wallet } = useWallet();
   const { tokenPrices, solUsd, raw, lastUpdated, loading: priceLoading } = usePrices();
+
+  // Live on-chain token balances for the connected wallet
+  const walletAddr = wallet?.account.address;
+  const { balances, isLoading: balLoading, refresh: refreshBalances } = useTokenBalances(walletAddr);
   const [internalIdx, setInternalIdx] = useState(0);
   const [tab, setTab]                 = useState<"mint" | "burn">("mint");
   const [amount, setAmount]           = useState("");
@@ -556,6 +561,7 @@ export function XGoldCard({
 
       setTxSig(data.signature ?? "");
       setMintStage("done");
+      refreshBalances(); // pull updated on-chain balance immediately
     } catch (err) {
       setTxError(
         err instanceof Error ? err.message.split("\n")[0].slice(0, 120) : "Transaction failed"
@@ -565,7 +571,7 @@ export function XGoldCard({
 
     // Modal only appears after final resolution
     setShowMintReceipt(true);
-  }, [status, wallet, solInputFloat, token, pythTokenOut, jupTokenOut]);
+  }, [status, wallet, solInputFloat, token, pythTokenOut, jupTokenOut, refreshBalances]);
 
   const closeMintReceipt = useCallback(() => {
     setShowMintReceipt(false);
@@ -624,20 +630,35 @@ export function XGoldCard({
           ))}
         </div>
 
-        {/* Token balance */}
-        <div className="rounded-xl p-4 mb-4" style={{ background: token.color + "15", border: `1px solid ${token.color}33` }}>
-          <p className="text-xs uppercase tracking-widest mb-1" style={{ color: "var(--muted)" }}>Your {token.symbol} Balance</p>
-          <p className="text-3xl font-bold tabular-nums tracking-tight" style={{ color: token.color }}>
-            0.000000
-            <span className="ml-2 text-lg font-normal" style={{ color: token.color, opacity: 0.7 }}>{token.symbol}</span>
-          </p>
-          <div className="flex items-center justify-between mt-1">
-            <p className="text-xs" style={{ color: "var(--muted)" }}>≈ $0.00 USD</p>
-            <p className="text-xs font-mono" style={{ color: "var(--muted)" }}>
-              {token.mintAddress.slice(0, 8)}…{token.mintAddress.slice(-4)}
-            </p>
-          </div>
-        </div>
+        {/* Token balance — live on-chain */}
+        {(() => {
+          const bal = balances[token.symbol] ?? 0;
+          const balUsd = bal * liveTokenPrice;
+          const showSkeleton = balLoading && bal === 0 && status === "connected";
+          return (
+            <div className="rounded-xl p-4 mb-4" style={{ background: token.color + "15", border: `1px solid ${token.color}33` }}>
+              <p className="text-xs uppercase tracking-widest mb-1" style={{ color: "var(--muted)" }}>
+                Your {token.symbol} Balance
+              </p>
+              {showSkeleton ? (
+                <div className="h-9 w-40 rounded animate-pulse mb-1" style={{ background: token.color + "30" }} />
+              ) : (
+                <p className="text-3xl font-bold tabular-nums tracking-tight" style={{ color: token.color }}>
+                  {bal.toLocaleString("en-US", { minimumFractionDigits: 6, maximumFractionDigits: 6 })}
+                  <span className="ml-2 text-lg font-normal" style={{ color: token.color, opacity: 0.7 }}>{token.symbol}</span>
+                </p>
+              )}
+              <div className="flex items-center justify-between mt-1">
+                <p className="text-xs" style={{ color: "var(--muted)" }}>
+                  {showSkeleton ? "—" : `≈ $${balUsd.toLocaleString("en-US", { minimumFractionDigits: 2, maximumFractionDigits: 2 })} USD`}
+                </p>
+                <p className="text-xs font-mono" style={{ color: "var(--muted)" }}>
+                  {token.mintAddress.slice(0, 8)}…{token.mintAddress.slice(-4)}
+                </p>
+              </div>
+            </div>
+          );
+        })()}
 
         {/* Tabs */}
         <div className="flex rounded-xl p-1 mb-4" style={{ background: "var(--cream)", border: "1px solid var(--border)" }}>

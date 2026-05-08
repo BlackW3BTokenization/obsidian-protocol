@@ -244,11 +244,13 @@ body::after {
 html {
   scroll-behavior: smooth;
   -webkit-text-size-adjust: 100%;
+  overflow-x: hidden; /* prevent absolute-positioned kanji watermarks from creating horizontal scroll */
 }
 
 /* Prevent pull-to-refresh hijack on Seeker */
 body {
   overscroll-behavior-y: none;
+  overflow-x: hidden; /* belt-and-suspenders: body clips any child overflow the html rule misses */
 }
 
 /* Momentum scrolling for all overflow containers */

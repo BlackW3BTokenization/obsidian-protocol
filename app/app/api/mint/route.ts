@@ -8,13 +8,15 @@
  * → { ok: true, signature: string }
  */
 
+// Force Node.js runtime — @solana/web3.js requires Node APIs (not Edge-compatible)
+export const runtime = "nodejs";
+
 import { NextRequest, NextResponse } from "next/server";
 import {
   Connection,
   Keypair,
   PublicKey,
   Transaction,
-  SystemProgram,
 } from "@solana/web3.js";
 import {
   TOKEN_2022_PROGRAM_ID,
@@ -30,20 +32,21 @@ const RPC = process.env.SOLANA_RPC_URL ?? "https://api.devnet.solana.com";
 
 function loadAuthority(): Keypair {
   const secret = process.env.MINT_AUTHORITY_SECRET;
-  if (!secret) throw new Error("MINT_AUTHORITY_SECRET not set in environment");
+  if (!secret) throw new Error("MINT_AUTHORITY_SECRET not set in environment — add it to Vercel env vars or .env.local");
   return Keypair.fromSecretKey(bs58.decode(secret));
 }
 
 export async function POST(req: NextRequest) {
   try {
-    const { tokenSymbol, walletAddress, tokenAmount } = await req.json() as {
-      tokenSymbol:  string;
+    const body = await req.json() as {
+      tokenSymbol:   string;
       walletAddress: string;
-      tokenAmount:  number;
+      tokenAmount:   number;
     };
+    const { tokenSymbol, walletAddress, tokenAmount } = body;
 
-    if (!tokenSymbol || !walletAddress || !tokenAmount || tokenAmount <= 0) {
-      return NextResponse.json({ ok: false, error: "Invalid params" }, { status: 400 });
+    if (!tokenSymbol || !walletAddress || typeof tokenAmount !== "number" || tokenAmount <= 0) {
+      return NextResponse.json({ ok: false, error: "Invalid params — need tokenSymbol, walletAddress, tokenAmount > 0" }, { status: 400 });
     }
 
     const token = OBSIDIAN_TOKENS.find((t) => t.symbol === tokenSymbol);
@@ -54,7 +57,14 @@ export async function POST(req: NextRequest) {
     const authority  = loadAuthority();
     const conn       = new Connection(RPC, "confirmed");
     const mintPubkey = new PublicKey(token.mintAddress);
-    const walletPub  = new PublicKey(walletAddress);
+
+    // Validate wallet address
+    let walletPub: PublicKey;
+    try {
+      walletPub = new PublicKey(walletAddress);
+    } catch {
+      return NextResponse.json({ ok: false, error: `Invalid wallet address: ${walletAddress}` }, { status: 400 });
+    }
 
     // Derive user's ATA for this Token-2022 mint
     const ata = getAssociatedTokenAddressSync(
@@ -65,16 +75,23 @@ export async function POST(req: NextRequest) {
       ASSOCIATED_TOKEN_PROGRAM_ID,
     );
 
-    const amountU64 = BigInt(Math.round(tokenAmount * Math.pow(10, token.decimals)));
+    // Convert to base units, guarding against overflow
+    const rawAmount = tokenAmount * Math.pow(10, token.decimals);
+    if (!Number.isFinite(rawAmount) || rawAmount <= 0) {
+      return NextResponse.json({ ok: false, error: `Token amount ${tokenAmount} is invalid after scaling` }, { status: 400 });
+    }
+    const amountU64 = BigInt(Math.round(rawAmount));
 
-    const { blockhash } = await conn.getLatestBlockhash("confirmed");
+    // Get blockhash + lastValidBlockHeight (required for blockheight-based confirmation —
+    // avoids WebSocket subscriptions which don't work in serverless environments)
+    const { blockhash, lastValidBlockHeight } = await conn.getLatestBlockhash("confirmed");
 
     const tx = new Transaction({
       recentBlockhash: blockhash,
       feePayer: authority.publicKey,
     });
 
-    // Create ATA if needed (idempotent)
+    // Create ATA if it doesn't already exist (idempotent — safe to re-run)
     tx.add(
       createAssociatedTokenAccountIdempotentInstruction(
         authority.publicKey,   // payer
@@ -86,7 +103,7 @@ export async function POST(req: NextRequest) {
       )
     );
 
-    // MintTo
+    // MintTo: credit amountU64 base units to the user's ATA
     tx.add(
       createMintToInstruction(
         mintPubkey,
@@ -100,15 +117,38 @@ export async function POST(req: NextRequest) {
 
     tx.sign(authority);
 
-    const sig = await conn.sendRawTransaction(tx.serialize(), {
-      skipPreflight: false,
-      preflightCommitment: "confirmed",
-    });
-    await conn.confirmTransaction(sig, "confirmed");
+    // Send — skip preflight so devnet simulation quirks don't surface false errors
+    let sig: string;
+    try {
+      sig = await conn.sendRawTransaction(tx.serialize(), {
+        skipPreflight: true,   // rely on on-chain execution; avoids sim-vs-reality mismatches
+        maxRetries: 3,
+      });
+    } catch (sendErr) {
+      const msg  = sendErr instanceof Error ? sendErr.message : String(sendErr);
+      const logs = (sendErr as { logs?: string[] }).logs ?? [];
+      console.error("[/api/mint] sendRawTransaction failed:", msg, "\nLogs:\n", logs.join("\n"));
+      throw new Error(`Send failed: ${msg}`);
+    }
 
+    // Blockheight-based confirm — polls via getSignatureStatus (no WebSocket needed)
+    const result = await conn.confirmTransaction(
+      { signature: sig, blockhash, lastValidBlockHeight },
+      "confirmed"
+    );
+
+    if (result.value.err) {
+      const errDetail = JSON.stringify(result.value.err);
+      console.error("[/api/mint] On-chain error for", sig, ":", errDetail);
+      throw new Error(`Transaction landed but failed on-chain: ${errDetail}`);
+    }
+
+    console.log("[/api/mint] Minted", tokenAmount, tokenSymbol, "→", walletAddress, "| sig:", sig);
     return NextResponse.json({ ok: true, signature: sig });
+
   } catch (err) {
     const message = err instanceof Error ? err.message : "Unknown error";
+    console.error("[/api/mint] Unhandled error:", message);
     return NextResponse.json({ ok: false, error: message }, { status: 500 });
   }
 }

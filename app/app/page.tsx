@@ -20,7 +20,7 @@ export default function PitchPage() {
   );
   const reserveLabel   = `$${(liveReserveUsd / 1_000_000).toFixed(1)}M`;
   return (
-    <div className="mx-auto max-w-6xl px-6">
+    <div className="mx-auto max-w-6xl px-6 overflow-x-hidden">
       {/* Hero */}
       <section className="pt-10 pb-16 md:pt-16 md:pb-20">
         <div className="grid grid-cols-1 gap-10 md:grid-cols-[minmax(0,1.05fr)_minmax(0,0.95fr)] md:items-center">
@@ -295,6 +295,41 @@ export default function PitchPage() {
             </p>
           </Link>
         ))}
+      </section>
+
+      {/* Backed by */}
+      <section className="my-14">
+        <p
+          className="text-center font-display text-[9px] font-black tracking-[0.35em] uppercase mb-8"
+          style={{ color: "var(--gray)" }}
+        >
+          Backed by &amp; built on
+        </p>
+        <div className="grid grid-cols-2 sm:grid-cols-4 gap-px" style={{ background: "var(--carbon)" }}>
+          {([
+            { name: "AGX / UPMA",      role: "Physical vault custodian",    href: "https://upma.org",                      icon: "🏛️" },
+            { name: "Solana",           role: "L1 settlement · 400ms",       href: "https://solana.com",                    icon: "◎"  },
+            { name: "Light Protocol",  role: "ZK reserve attestation",      href: "https://lightprotocol.com",             icon: "⬡"  },
+            { name: "SPL Token 2022",  role: "Transfer-fee token standard",  href: "https://spl.solana.com/token-2022",     icon: "⬢"  },
+          ] as const).map(({ name, role, href, icon }) => (
+            <a
+              key={name}
+              href={href}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="flex flex-col items-center justify-center gap-2 py-6 px-4 text-center transition-colors hover:bg-[rgba(200,150,12,0.04)] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2"
+              style={{ background: "var(--void)", outlineColor: "var(--vault-gold)" }}
+            >
+              <span className="text-2xl select-none" aria-hidden="true">{icon}</span>
+              <p className="font-display font-black tracking-[0.15em] text-[10px] uppercase" style={{ color: "var(--parchment)" }}>
+                {name}
+              </p>
+              <p className="text-[9px] font-display tracking-[0.1em]" style={{ color: "var(--gray)" }}>
+                {role}
+              </p>
+            </a>
+          ))}
+        </div>
       </section>
     </div>
   );
