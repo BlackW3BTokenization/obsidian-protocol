@@ -86,7 +86,7 @@ export default function RootLayout({
         <Providers>
           <div
             className="relative min-h-screen flex flex-col overflow-x-hidden w-full"
-            style={{ background: "var(--background)", color: "var(--foreground)" }}
+            style={{ background: "var(--background)", color: "var(--foreground)", overflowX: "hidden", maxWidth: "100vw" }}
           >
             {/* Global obsidian grid background */}
             <div

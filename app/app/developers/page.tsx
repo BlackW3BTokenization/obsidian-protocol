@@ -8,12 +8,12 @@ const WHY_X402 = [
   {
     kanji: "402",
     title: "HTTP 402 · Payment Required",
-    desc: "An IETF status code unused since 1997. Coinbase revived it as the open standard for pay-per-call APIs. Obsidian implements it native on Solana.",
+    desc: "An IETF status code revived by Coinbase as the open standard for pay-per-call APIs. Obsidian implements it native on Solana.",
   },
   {
     kanji: "AI",
     title: "Built for agents, not humans",
-    desc: "AI agents can't sign up, fill forms, or manage subscriptions. They CAN sign a payment header. x402 is the only model an autonomous LLM can use without a human in the loop.",
+    desc: "AI agents can't sign up or manage subscriptions. They CAN sign a payment header. x402 is the only model an autonomous agent can use without a human in the loop.",
   },
   {
     kanji: "∞",
@@ -83,9 +83,7 @@ export default function DevelopersPage() {
           </span>
         </h1>
         <p className="text-sm mt-3 max-w-2xl relative" style={{ color: "var(--gray)" }}>
-          Obsidian isn't just a user product. It's infrastructure. Every API call is a
-          settlement event. Every endpoint a revenue line. AI-agent native, payment by
-          default, no subscriptions.
+          Every API call is a settlement event. AI-agent native, no subscriptions.
         </p>
       </header>
 
@@ -232,8 +230,7 @@ export default function DevelopersPage() {
               </span>
             </h2>
             <p className="text-sm mt-3 max-w-md" style={{ color: "var(--gray)" }}>
-              Open-source TypeScript + Rust client libraries, plus a hosted x402 facilitator
-              for partners who don't want to run their own settlement.
+              TypeScript + Rust client libraries and a hosted x402 facilitator for partners.
             </p>
           </div>
           <div className="flex flex-wrap gap-3">

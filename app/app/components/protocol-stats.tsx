@@ -4,6 +4,7 @@ import { useEffect, useState, useRef } from "react";
 import { OBSIDIAN_TOKENS } from "../lib/tokens";
 import { FintechIcon } from "./fintech-icon";
 import { usePrices } from "../lib/price-context";
+import { TokenSvg } from "./token-svg";
 
 const TOTAL_AGX_ACCOUNTS = 60_000;
 const ADDRESSABLE_TVL    = TOTAL_AGX_ACCOUNTS * 8_500;
@@ -165,13 +166,7 @@ export function ProtocolStats() {
                 className="relative aspect-square overflow-hidden"
                 style={{ background: "var(--obsidian)", borderBottom: "1px solid var(--carbon)" }}
               >
-                <img
-                  src={token.image}
-                  alt={`${token.name} (${token.symbol})`}
-                  className="w-full h-full object-cover"
-                  style={{ filter: "saturate(1.1) contrast(1.05)" }}
-                  loading="lazy"
-                />
+                <TokenSvg symbol={token.symbol} className="absolute inset-0" />
                 <div
                   aria-hidden="true"
                   className="pointer-events-none absolute inset-0"
@@ -269,7 +264,7 @@ export function ProtocolStats() {
               Tokenization Adoption Target
             </p>
             <p className="font-display text-[10px] font-black tracking-[0.15em]" style={{ color: "var(--gold)" }}>
-              Y1 GOAL · 20% → $102M TVL
+              Y1 GOAL · 20% = $102M TVL
             </p>
           </div>
           <div className="relative h-3 overflow-hidden" style={{ background: "var(--carbon)" }}>

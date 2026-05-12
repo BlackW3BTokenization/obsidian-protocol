@@ -238,11 +238,11 @@ export function RevenueModel() {
                 <span className="font-display text-sm font-black tabular-nums" style={{ color: "var(--gold-light)" }}>{fmt(r.total)}/yr</span>
               </div>
               <div className="flex items-center justify-between">
-                <span className="text-xs" style={{ color: "var(--gray)" }}>→ Obsidian treasury (80%)</span>
+                <span className="text-xs" style={{ color: "var(--gray)" }}>Obsidian treasury (80%)</span>
                 <span className="font-display text-xs font-bold" style={{ color: "var(--parchment)" }}>{fmt(r.protocol)}/yr</span>
               </div>
               <div className="flex items-center justify-between">
-                <span className="text-xs" style={{ color: "var(--gray)" }}>→ AGX revenue share (20%)</span>
+                <span className="text-xs" style={{ color: "var(--gray)" }}>AGX revenue share (20%)</span>
                 <span className="font-display text-xs font-bold" style={{ color: "var(--gold)" }}>{fmt(r.agx)}/yr</span>
               </div>
             </div>

@@ -6,7 +6,7 @@ export const metadata: Metadata = {
     "Live dApp on Solana devnet. Mint xGOLD, xSLVR, xGLDD, xSLVD, and xGLDB against your AGX reserve allocation. Connect a wallet to start.",
   openGraph: {
     title: "Obsidian Protocol · Live dApp",
-    description: "Mint tokenized precious metals on Solana. 5 SPL Token 2022 contracts backed 1:1 by AGX vault metal.",
+    description: "Mint tokenized precious metals on Solana. 5 tokenized metals backed 1:1 by AGX vault metal.",
     url: "https://w3bs.fun/protocol",
     images: [{ url: "https://w3bs.fun/assets/pyramid-xgold.jpg", width: 1200, height: 630 }],
   },

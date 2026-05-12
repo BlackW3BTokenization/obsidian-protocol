@@ -23,8 +23,6 @@ export function BackedBy() {
         style={{
           background: "var(--void)",
           borderColor: "var(--carbon)",
-          transform: "translateZ(0)", /* iOS Safari: force GPU layer so overflow-hidden actually clips will-change:transform children */
-          WebkitTransform: "translateZ(0)",
         }}
       >
         <div

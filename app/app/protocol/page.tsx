@@ -8,6 +8,7 @@ import { ReserveCard } from "../components/reserve-card";
 import { WalletBalanceCard } from "../components/wallet-balance-card";
 import { OBSIDIAN_TOKENS } from "../lib/tokens";
 import { usePrices } from "../lib/price-context";
+import { TokenSvg } from "../components/token-svg";
 
 const MOCK_TX_FEED = [
   { type: "MINT",     token: "xGOLD", amount: "2.5",    wallet: "5Vug…dD6", ago: "12s",     status: "confirmed" },
@@ -55,9 +56,8 @@ export default function ProtocolPage() {
             </span>
           </h1>
           <p className="text-sm mt-3 max-w-2xl relative" style={{ color: "var(--gray)" }}>
-            5 SPL Token 2022 contracts (xGOLD · xSLVR · xGLDD · xSLVD · xGLDB) deployed
-            on Solana devnet, backed 1:1 by AGX vault metal. Connect a wallet to mint
-            against your reserve allocation.
+            5 tokenized metals on Solana devnet, backed 1:1 by AGX vault metal.
+            Connect a wallet to mint.
           </p>
         </div>
 
@@ -69,15 +69,10 @@ export default function ProtocolPage() {
             className="relative w-full h-full overflow-hidden"
             style={{ background: "var(--obsidian)", border: "1px solid var(--carbon)" }}
           >
-            <img
+            <TokenSvg
               key={selectedToken.symbol}
-              src={selectedToken.image}
-              alt={`${selectedToken.name} · ${selectedToken.symbol}`}
-              className="w-full h-full object-cover transition-opacity duration-300"
-              style={{
-                filter: "saturate(1.05) contrast(1.05)",
-                animation: "fadeIn 0.35s ease-out",
-              }}
+              symbol={selectedToken.symbol}
+              className="absolute inset-0"
             />
             <div
               aria-hidden="true"
@@ -146,7 +141,7 @@ export default function ProtocolPage() {
               Live Transaction Feed
             </p>
             <p className="text-xs mt-1" style={{ color: "var(--gray)" }}>
-              Recent mint · burn · transfer activity across all 5 Obsidian tokens
+              Recent activity across all 5 tokens
             </p>
           </div>
           <span
@@ -270,11 +265,11 @@ export default function ProtocolPage() {
           })}
         </div>
         <p className="text-[10px] mt-4 font-mono" style={{ color: "var(--gray)" }}>
-          Illustrative feed · live on-chain indexer via{" "}
+          Illustrative ·{" "}
           <Link href="/developers" className="underline" style={{ color: "var(--gold)" }}>
-            x402-gated streaming
+            live indexer
           </Link>{" "}
-          ships with mainnet launch.
+          ships with mainnet.
         </p>
       </section>
     </div>

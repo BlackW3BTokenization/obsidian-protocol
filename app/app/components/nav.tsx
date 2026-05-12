@@ -12,8 +12,7 @@ import { WaitlistModal } from "./waitlist-modal";
 const ROUTES = [
   { href: "/",           label: "BLKW3B",   kanji: "𓂀", icon: "dollar_shield"   as FintechIconName },
   { href: "/protocol",   label: "PROTOCOL", kanji: "𓂋", icon: "laptop_trading"  as FintechIconName },
-  { href: "/reserves",   label: "RESERVES", kanji: "𓇳", icon: "safe"            as FintechIconName },
-  { href: "/revenue",    label: "REVENUE",  kanji: "𓏥", icon: "bar_chart"       as FintechIconName },
+  { href: "/revenue",    label: "VAULT",    kanji: "𓇳", icon: "safe"            as FintechIconName },
   { href: "/developers", label: "DEV",      kanji: "𓈖", icon: "laptop_security" as FintechIconName },
 ] as const;
 

@@ -29,7 +29,7 @@ export function useTokenBalances(walletAddress?: Address) {
 
   const { data, isLoading, error, mutate } = useSWR<TokenBalances>(
     walletAddress ? (["token-balances", cluster, walletAddress] as const) : null,
-    async ([, , addr]) => {
+    async ([, , addr]: readonly [string, string, Address]) => {
       const balances: TokenBalances = {};
 
       await Promise.all(
