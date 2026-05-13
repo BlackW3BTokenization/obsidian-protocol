@@ -61,17 +61,10 @@ export function ProtocolStats() {
 
       {/* Live protocol status bar */}
       <div
-        className="grid grid-cols-2 sm:grid-cols-4 gap-px"
+        className="grid grid-cols-3 gap-px"
         style={{ background: "var(--carbon)" }}
       >
         {[
-          {
-            icon: "safe_open_coins" as const,
-            label: "CONTRACTS LIVE",
-            value: "5 / 5",
-            sub: "SPL Token 2022 · Solana",
-            accent: "var(--mint-green)",
-          },
           {
             icon: "goldbar" as const,
             label: "BACKED BY",
@@ -88,10 +81,10 @@ export function ProtocolStats() {
           },
           {
             icon: "laptop_trading" as const,
-            label: "SETTLEMENT",
-            value: "400MS",
-            sub: "Solana devnet · mainnet Q3",
-            accent: "var(--cyan)",
+            label: "INSURED BY",
+            value: "UPMA",
+            sub: "United Precious Metals Association",
+            accent: "var(--purple)",
           },
         ].map(({ icon, label, value, sub, accent }) => (
           <div
@@ -124,7 +117,7 @@ export function ProtocolStats() {
               AGX Network · Tokenization Opportunity
             </p>
             <h2 className="font-display text-2xl font-black tracking-tight" style={{ color: "var(--parchment)" }}>
-              60,000+ Members.
+              60,000+ accounts holding gold &amp; silver.
               <span
                 className="ml-2"
                 style={{
@@ -138,7 +131,7 @@ export function ProtocolStats() {
               </span>
             </h2>
             <p className="text-sm mt-1" style={{ color: "var(--muted)" }}>
-              Every AGX member holds physical precious metals today. Obsidian Protocol brings that value on-chain.
+              Every AGX account is backed by physical precious metals stored in UPMA-insured vaults. Obsidian Protocol puts that value on-chain — tokenized, tradeable, and ZK-attested daily.
             </p>
           </div>
           <span
@@ -221,9 +214,6 @@ export function ProtocolStats() {
                     </>
                   );
                 })()}
-                <p className="font-mono truncate" style={{ color: "var(--gray)", fontSize: "9px" }}>
-                  {token.mintAddress.slice(0, 12)}…
-                </p>
                 <p className="text-[10px]" style={{ color: "var(--gray)" }}>
                   {token.reserveQty.toLocaleString()} {token.unitShort} reserve
                 </p>

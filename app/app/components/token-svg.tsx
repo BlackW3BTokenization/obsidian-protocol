@@ -272,10 +272,10 @@ function CoinPrism3D({
           boxShadow: "none",
         },
       )}>
-        <span style={{ ...tickerLabelStyle(diameter * 0.16), transform: "scaleX(-1)" }}>{ticker}</span>
+        <span style={tickerLabelStyle(diameter * 0.16)}>{ticker}</span>
       </div>
 
-      {/* BOTTOM FACE — visible at Y=180°, plain text */}
+      {/* BOTTOM FACE — rotate(180deg) corrects mirror+flip when viewed from back */}
       <div style={faceStyle(
         diameter, diameter, colors.back,
         `translate(-50%, -50%) rotateX(-90deg) translateZ(${thicknessCqw / 2}cqw)`,
@@ -288,7 +288,7 @@ function CoinPrism3D({
           boxShadow: "none",
         },
       )}>
-        <span style={tickerLabelStyle(diameter * 0.16)}>{ticker}</span>
+        <span style={{ ...tickerLabelStyle(diameter * 0.16), transform: "rotate(180deg)" }}>{ticker}</span>
       </div>
     </div>
   );
