@@ -1,16 +1,36 @@
-﻿/**
+/**
  * POST /api/redemptions  - file a physical redemption request
  * GET  /api/redemptions  - list all redemptions (admin use)
  *
- * Writes to /data/redemptions.json at project root.
- * Each entry is append-only - no deletes, no edits.
+ * Persists to Vercel KV (Upstash Redis) under the list key "redemptions".
+ * Append-only — `LPUSH` for writes, `LRANGE` for reads (newest first).
+ *
+ * Required env vars (auto-injected by Vercel when KV is connected to the
+ * project — provision via the Vercel dashboard → Storage → KV):
+ *   - KV_REST_API_URL
+ *   - KV_REST_API_TOKEN
  */
 
 import { NextRequest } from "next/server";
-import { readFileSync, writeFileSync, mkdirSync } from "fs";
-import { join } from "path";
+import { Redis } from "@upstash/redis";
 
-const DATA_PATH = join(process.cwd(), "data", "redemptions.json");
+export const runtime = "nodejs";
+export const dynamic = "force-dynamic";
+
+const REDIS_KEY = "redemptions";
+
+let redisClient: Redis | null = null;
+function getRedis(): Redis {
+  if (redisClient) return redisClient;
+  if (!process.env.KV_REST_API_URL || !process.env.KV_REST_API_TOKEN) {
+    throw new Error(
+      "Vercel KV not configured: missing KV_REST_API_URL or KV_REST_API_TOKEN. " +
+      "Connect a KV store to this project in the Vercel dashboard, then redeploy."
+    );
+  }
+  redisClient = Redis.fromEnv();
+  return redisClient;
+}
 
 export interface RedemptionRecord {
   id:          string;        // RDM-XXXXXX
@@ -31,24 +51,6 @@ export interface RedemptionRecord {
     country:  string;
   };
   status: "pending" | "processing" | "shipped" | "delivered";
-}
-
-function loadRecords(): RedemptionRecord[] {
-  try {
-    const raw = readFileSync(DATA_PATH, "utf-8");
-    return JSON.parse(raw) as RedemptionRecord[];
-  } catch {
-    return [];
-  }
-}
-
-function saveRecords(records: RedemptionRecord[]): void {
-  try {
-    mkdirSync(join(process.cwd(), "data"), { recursive: true });
-    writeFileSync(DATA_PATH, JSON.stringify(records, null, 2), "utf-8");
-  } catch (err) {
-    throw new Error(`Failed to write redemptions: ${(err as Error).message}`);
-  }
 }
 
 function generateId(): string {
@@ -88,19 +90,18 @@ export async function POST(req: NextRequest) {
     id:        generateId(),
     createdAt: new Date().toISOString(),
     status:    "pending",
-    // Redact email to last 2 chars of local part for the stored record
-    shipping: {
-      ...s,
-      email: s.email, // store full email for fulfillment
-    },
+    shipping:  { ...s }, // store full shipping for fulfillment
   };
 
   try {
-    const records = loadRecords();
-    records.push(record);
-    saveRecords(records);
+    // Upstash auto-serializes objects to JSON on lpush.
+    await getRedis().lpush(REDIS_KEY, record);
   } catch (err) {
-    return Response.json({ error: (err as Error).message }, { status: 500 });
+    console.error("[redemptions] persist failed", err);
+    return Response.json(
+      { error: `Failed to persist redemption: ${(err as Error).message}` },
+      { status: 500 },
+    );
   }
 
   return Response.json({
@@ -115,8 +116,19 @@ export async function POST(req: NextRequest) {
 
 // ── GET ───────────────────────────────────────────────────────────────────
 export async function GET() {
-  const records = loadRecords();
-  // Strip email from public list response
+  let records: RedemptionRecord[];
+  try {
+    // Upstash auto-deserializes JSON values on lrange.
+    records = await getRedis().lrange<RedemptionRecord>(REDIS_KEY, 0, -1);
+  } catch (err) {
+    console.error("[redemptions] load failed", err);
+    return Response.json(
+      { error: `Failed to load redemptions: ${(err as Error).message}` },
+      { status: 500 },
+    );
+  }
+
+  // Strip full email from public list response — keep first 2 chars + domain.
   const safe = records.map(({ shipping, ...rest }) => ({
     ...rest,
     shipping: {
